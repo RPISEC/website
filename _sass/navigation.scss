@@ -1,0 +1,65 @@
+.nav-open nav {
+	border-bottom: 1px dotted rgba(255, 255, 255, .2);
+	padding: 10px 0;
+	a {
+		display: block;
+	}
+
+	@media #{$desktop } {
+		border: 0;
+		padding: 0 20px;
+
+		a {
+			display: inline;
+		}
+	}
+}
+
+nav {
+	text-transform: uppercase;
+	font-size: 1em;
+	width: 100%;
+
+	@media #{$desktop } {
+        font-size: .8em;
+		text-align: right;
+		padding: 0 20px;
+	}
+
+
+	a {
+		margin: 0 3px;
+		padding: 20px 10px;
+		border-bottom: 1px solid rgba(255,255,255,0);
+		color: rgba(255,255,255,.8);
+		display: none;
+
+		@media #{$desktop } {
+			display: inline-block;
+			padding: 10px;
+		}
+	}
+
+	a:hover {
+		border-bottom: 1px solid #fff;
+		color: #fff;
+	}
+
+	@media #{$desktop } {
+		a.highlight {
+			border: 1px #ccc solid;
+			border-radius: 5px;
+
+			&:hover {
+				background: #fff;
+				color: $header-color;
+			}
+		}
+	}
+
+	a.active {
+		color: $brand-color;
+		border-bottom: 1px solid $brand-color;
+	}
+
+}
