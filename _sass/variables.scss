@@ -1,0 +1,24 @@
+$header-color: #1b1b1b;
+$brand-color: #6adca9;
+
+$phone: "(max-width: 649px)";
+$tablet: "(min-width: 650px)";
+$desktop: "(min-width: 768px)";
+
+$serif                        : Georgia, Times, serif !default;
+$sans-serif                   : -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", Arial, sans-serif !default;
+$monospace                    : Hack, Monaco, Consolas, "Lucida Console", monospace !default;
+
+$sans-serif-narrow            : $sans-serif !default;
+$helvetica                    : Helvetica, "Helvetica Neue", Arial, sans-serif !default;
+
+$georgia                      : Georgia, serif !default;
+$times                        : Times, serif !default;
+$bodoni                       : "Bodoni MT", serif !default;
+$calisto                      : "Calisto MT", serif !default;
+$garamond                     : Garamond, serif !default;
+
+//$global-font-family           : $sans-serif !default;
+$global-font-family           : $monospace !default;
+$header-font-family           : $sans-serif !default;
+$caption-font-family          : $serif !default;
