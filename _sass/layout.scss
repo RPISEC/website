@@ -1,0 +1,249 @@
+.container, .text-container {
+	margin: 0 auto;
+	position: relative;
+	padding: 0 20px;
+  	h1 {
+		font-weight: bold;
+	}
+	color: #ffffff;
+}
+
+.text-container {
+	color: #ffffff;
+	max-width: 750px;
+}
+
+.container {
+	max-width: 1140px;
+
+	&.max-container {
+		max-width: 100%;
+		padding: 0;
+	}
+}
+
+header {
+	color: #fff;
+	padding: 20px 0;
+	background: $header-color;
+
+	a {
+		color: #fff;
+		text-decoration: none;
+		z-index: 1;
+		position: relative;
+
+		&:hover {
+			text-decoration: none;
+		}
+	}
+
+	.container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: space-between;
+		@media #{$desktop } {
+			flex-direction: row;
+		}
+	}
+
+	.company-name {
+		height: 1.6em;
+		font-size: 1.7em;
+
+		@media #{$phone} {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
+			width: 100%;
+			#nav-title {
+				flex-grow: 1;
+				text-align: center;
+				margin-left: -1em;
+			}
+		}
+
+
+		.nav-toggle {
+			display: inline;
+			border: 0;
+			width: 1em;
+          	z-index: 1;
+			padding-bottom: 5px;
+
+			@media #{$desktop } {
+				display: none;
+			}
+
+			&:hover {
+				border: 0;
+			}
+		}
+
+		a {
+			display: inline-block;
+			font-weight: bold;
+            padding: .3em;
+			&:hover {
+				border-bottom: 1px solid #fff;
+			}
+		}
+
+		img {
+			display: block;
+			width: auto;
+		}
+	}
+}
+
+.content {
+	background: #212121;
+	padding: 1px 0 0 0;
+	position: relative;
+	h1, h2, h3, h4, h5, h6 {
+		font-weight: bold;
+      	color: $brand-color;
+	}
+	@media #{$phone} {
+		h1 {
+			font-size: 1.5em;
+		}
+		p {
+			font-size: 1em;
+		}
+	}
+}
+
+.content-text {
+	section {
+		padding: 25px 0;
+		@media #{$phone} {
+			padding-bottom: 2.5em;
+		}
+	}
+}
+
+.screenshot{
+	max-width: 100%;
+	height: auto;
+	display: block;
+	box-shadow: 0 1px 0 #ccc, 0 1px 0 1px #eee;
+	border-radius: 2px;
+	margin-left: auto;
+	margin-right: auto;
+	background: #DDD url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2244%22%20height%3D%2212%22%20viewBox%3D%220%200%2044%2012%22%3E%3Ccircle%20cx%3D%226%22%20cy%3D%226%22%20r%3D%224%22%20fill%3D%22%23eee%22%20%2F%3E%3Ccircle%20cx%3D%2222%22%20cy%3D%226%22%20r%3D%224%22%20fill%3D%22%23eee%22%20%2F%3E%3Ccircle%20cx%3D%2238%22%20cy%3D%226%22%20r%3D%224%22%20fill%3D%22%23eee%22%20%2F%3E%3C%2Fsvg%3E') 4px 4px no-repeat;
+	padding: 20px 0 0 0;
+	position: relative;
+}
+
+.picture{
+	max-width: 100%;
+	height: auto;
+	display: block;
+	box-shadow: 0 1px 0 #333, 0 1px 0 1px #222;
+	border-radius: 2px;
+	margin-left: auto;
+	margin-right: auto;
+	position: relative;
+}
+
+section {
+	padding: 100px 0;
+	@media #{$phone} {
+        padding-bottom: 3.5em;
+	}
+}
+
+@media #{$phone} {
+	section:first-child {
+		padding-top: 20px;
+	}
+}
+
+section + section {
+	padding-top: 0;
+}
+
+.subtext {
+	font-size: 1.38em;
+	margin-top: 10px;
+	text-align: center;
+}
+
+.sidetext {
+	font-size: 1.38em;
+	text-align: center;
+}
+
+.cta {
+	margin: 60px 0;
+}
+
+.page h1 {
+	text-align: center;
+}
+
+blockquote {
+	padding: 18px 25px 18px 45px;
+	margin: 0;
+	quotes: "\201C""\201D""\2018""\2019";
+	font-style: italic;
+	text-indent: -3em;
+
+	.author {
+		display: block;
+		font-weight: bold;
+		margin: 10px 0 0 0;
+		font-size: .85em;
+		font-style: normal;
+	}
+
+	p {
+		text-indent: 0;
+		display: block;
+	}
+	p:first-child {
+		display: inline;
+	}
+}
+
+blockquote:before {
+	color: #ccc;
+	content: open-quote;
+	font-size: 4em;
+	line-height: 0.1em;
+	margin-right: 0.25em;
+	vertical-align: -0.4em;
+	font-family: $helvetica;
+}
+
+.square-image {
+	width: 150px;
+	height: 150px;
+	overflow: hidden;
+	margin: 25px auto 0 auto;
+	position: relative;
+	border-radius: 200px;
+
+	img {
+		position: absolute;
+		left: -1000%;
+		right: -1000%;
+		top: -1000%;
+		bottom: -1000%;
+		margin: auto;
+		width: 300px;
+	}
+}
+
+.page {
+	margin-bottom: 0;
+	padding-bottom: 80px;
+}
+
+.center-text {
+	text-align: center;
+}
+
