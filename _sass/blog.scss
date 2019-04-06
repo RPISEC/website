@@ -31,6 +31,9 @@
 			text-decoration: none;
 			font-weight: bold;
 			font-size: 1.3em;
+			&:hover {
+				text-decoration: underline;
+			}
 		}
 	}
 
@@ -88,6 +91,9 @@
 		.button {
 			margin: 30px 0 0 0;
 		}
+		p {
+			font-size: 1em;
+		}
 	}
 }
 
@@ -98,15 +104,14 @@
 .blog-filter {
 	text-align: center;
 	a {
-		background: #eee;
-    padding: 3px 5px;
-    font-size: .8em;
-    border-radius: 5px;
-    color: #888;
-		transition: .2s ease-in-out;
+		background: #333;
+        padding: 3px 5px;
+        font-size: .8em;
+        border-radius: 5px;
+        color: #fff;
 
 		&:hover {
-			color: #555;
+			color: $brand-color;
 			text-decoration: none;
 		}
 	}

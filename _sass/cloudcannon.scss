@@ -1,4 +1,4 @@
-.editor-link, .nav-open nav .editor-link {
+.nav-open nav {
  	display: none;
 	margin-top: 0;
 
@@ -12,7 +12,6 @@
 		text-decoration: none;
 		padding: 10px 15px;
 		margin: 0;
-		font-size: 18px;
 	}
 
 	nav &, .btn {
@@ -26,12 +25,4 @@
 			color: #333;
 		}
 	}
-}
-
-.cms-editor-active .editor-link {
-	display: block;
-}
-
-.cms-editor-active nav .editor-link {
-	display: inline;
 }

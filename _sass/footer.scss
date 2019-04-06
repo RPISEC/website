@@ -21,7 +21,6 @@
 			svg {
 				fill: #999;
 				margin-right: 10px;
-				transition: fill 0.2s ease;
 				vertical-align: middle;
 				position: relative;
 				top: -2px;
@@ -70,6 +69,7 @@ footer {
 	position: relative;
 	background: $header-color;
 	color: #fff;
+	text-align: center;
 
 	.copyright {
 		font-size: .8em;
@@ -83,7 +83,7 @@ footer {
 	
 	&,
 	a {
-		color: #999;
+		color: #eaeaea;
 	}
 
 	h2 {
@@ -100,10 +100,6 @@ footer {
 
 	a {
 		text-decoration: none;
-
-		&:hover {
-			color: #fff;
-		}
 	}
 
 	.legal-line {

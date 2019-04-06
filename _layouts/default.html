@@ -33,7 +33,6 @@
 		{{ content }}
 		<footer>
 			<div class="container">
-				<p class="editor-link"><a href="cloudcannon:collections/_data/footer.yml" class="btn"><strong>&#9998;</strong> Edit footer</a></p>
 				<div class="footer-columns">
 					{% for column in site.data.footer %}
 					<ul class="footer-links">
@@ -47,7 +46,7 @@
 					</ul>
 					{% endfor %}
 				</div>
-				<p class="copyright">&copy; {{ site.time | date: '%Y' }} RPISEC. • <a href="https://github.com/RPISEC/rpis.ec">Source</a></p></div>
+				<p class="copyright">&copy; {{ site.time | date: '%Y' }} RPISEC • <a href="https://github.com/RPISEC/rpis.ec">Source</a></p></div>
 		</footer>
 		<script>
 			document.getElementById("open-nav").onclick = function () {
