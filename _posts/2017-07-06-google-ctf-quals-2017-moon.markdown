@@ -1,0 +1,148 @@
+---
+title: Google CTF Quals 2017 - Moon
+authors: Toshi Piazza
+date: 2017-07-06
+categories: reverse-engineering 
+---
+
+This writeup is for the reversing challenge "Moon" we solved during 2017 Google CTF Quals.
+This writeup and 3 others were also submitted to the Google CTF Writeup Competition.
+
+## Dealing with GLEW
+
+A big problem we noticed early on was the use of GL3W, which generates code to lazily load
+all OpenGL functions at runtime--at all places where an OpenGL function was used we would
+simply see a call to some offset in the data section. Unfortunately we couldn't find a
+script to re-symbolize function calls, but we plan to make one soon-ish :)
+
+We can see the huge routine which calls LoadLibrary on every OpenGL function, at
+`sub_4032c0`.
+
+![GLEW lazy loading functions]({filename}/assets/IDA_glew.png)
+
+Instead of symbolizing (by hand) all of the symbols, we only bothered to load ones which
+had valid XREFs to them, saving a bit of time.
+
+## Running the Program
+
+Unfortunately all the RPI-sold computers from our year are not yet reported to support
+OpenGL 4.3, so first and foremost we had to patch the OpenGL verification check from 4.3
+to 4.2. Surprisingly, this "just worked" despite the code making use of Compute Shaders
+which I had thought to be introduced in OpenGL 4.3.
+
+The program simply opens up a window, and asks for a password. After we've entered 32
+characters, the program either responds "good" (presumably), or "Nope".
+
+![Running the program]({filename}/assets/moon.png)
+
+When we XREF the string Nope, we see that it is used when constructing the texture to be
+printed for this SDL event loop iteration. Not too far from "Nope" do we find "Good", and
+we notice that "Good" is only selected if a particular global variable is set. We trace
+this back to the following code in main:
+
+[gist:id=68518a29e3c22e48b3c9fb50823a78f4]
+
+We want `should_compute` here to be 2, meaning the memcmp succeeded. `Buf2` is the
+following string:
+
+```
+30c7ead97107775969be4ba00cf5578f1048ab1375113631dbb6871dbe35162b1
+c62e982eb6a7512f3274743fb2e55c818912779ef7a34169a838666ff3994bb4d
+3c6e14ba2d732f14414f2c1cb5d3844935aebbbe3fb206343a004e18a092daba0
+2e3c0969871548ed2c372eb68d1af41152cb3b61f300e3c1a8246108010d282e1
+6df8ae7bff6cb6314d4ad38b5f9779ef23208efe3e1b699700429eae1fa93c036
+e5dcbe87d32be1ecfac2452ddfdc704a00ea24fbc2161b7824a968e9da1db7567
+12be3e7b3d3420c8f33c37dba42072a941d799ba2eebbf86191cb59aa49a80ebe
+0b61a79741888cb62341259f62848aad44df2b809383e09437928980f
+```
+So, once our input is hashed, it must match the above value. The hashing of our input
+seems to occur at `sub_401BF0`, and through windbg we can confirm that our input is the
+first argument, and the hash is written out to the second argument. Nothing much happens
+here, however, though we do see references to `glUseProgram` and `glDispatchCompute`, as
+seen below:
+
+[gist:id=6dd2d59bad3c3f624614d792c8062a82]
+
+Although we can see the fragment and vertex shaders in clear view in the strings, we can't
+see any reference to the compute shader glsl source. We assume it's encrypted somehow, so
+we break on `glCompileShader` and wait until the glsl compute shader is decrypted. This is
+a wild guess, as the shader could have been precompiled somehow but we punt on this.
+
+The dumped source is as follows, after adding the proper formatting:
+
+[gist:id=15da5d32f3cf793edb39e3751b521e6e]
+
+## Reversing the Compute Shader
+
+We note a few properties of the hashing function below:
+
+1. The $h$ variable is constant for all iterations of this compute shader. It is dependent
+   only on the password.
+2. The only place in which the index, $idx$ affects $final$ is where we compute `final
+   ^= idx << i` in a loop. This is completely reversible.
+3. Other than these 2 conditions, $final$ is completely dependent on the current character.
+
+Our goal here is to exploit these characteristics to find an idx-independent and
+password-independent hash for each character. This would allow us to brute force the
+password character by character. We can find the h of the real password like so:
+
+$$
+\begin{align*}
+    hash_C  &= reverse\_idx(final\_C) \oplus hash_h \\
+    hash_C' &= reverse\_idx(final\_C) \oplus hash_h'
+\end{align*}
+$$
+
+Here, $hash_C$ is the value of the first index corresponding to the 'C' character in 'CTF'
+(we're assuming the password starts thus because of the flag format), for the real
+password, or the password we'd like to find. $hash_C'$ is the value of the same index in
+our dummy string, say the string:
+
+`CTF{AAAAAAAAAAAAAAAAAAAAAAAAAAAA`
+
+which also has a 'C' at the same index.  $hash_h$ represents the $h$ value used to xor
+with the output of the hash function for the real password, and likewise $hash_h'$ is this
+value of h for our dummy password.
+
+Note that $final_C$ is the same for both the real and the dummy password; it's passed out
+of the hash function. The $reverse\_idx$ function removes $final_C$'s dependence on idx,
+reproduced below:
+
+$$
+\begin{align*}
+reverse\_idx(final,idx) = final &\oplus (idx<<0)  \\
+                                &\oplus (idx<<6)  \\
+                                &\oplus \dots     \\
+                                &\oplus (idx<<26)
+\end{align*}
+$$
+
+Finally, to compute $hash_h$, we simply need to perform the following:
+
+$$
+hash_h = hash_C' \oplus hash_C ⊕ hash_h'
+$$
+
+Although it took a lot of work, we now have h of the target password, since we know
+$hash_C'$, $hash_C$, and $hash_h'$. With this, we can figure out the hash value of
+every character in the password, independent of the character's index, and brute force
+them character by character.
+
+## Brute Forcing the Password
+
+Unfortunately we were unable to replicate this algorithm forwards in C++, for some unknown
+reasons (probably something to do with the `calc` function). Since we were running out of
+time, we opted instead to compute a lexicon of characters up front with the debugger. We
+then took the hash of each character and made them idx-independent, as well as un-xor'd
+their h terms, like so:
+
+[gist:id=092a53e402f71ab1d5da3ebc9eedbe05]
+
+Now, all we need to do is take `Buf2`'s characters and render them also idx-independent,
+un-xor them with the known h for this password (which turns out to be `0x6f6f6f6f`,
+computed in the previous section) and then match each hash with the known values in our
+lexicon, as below:
+
+[gist:id=79c864f645e5a827afa7076cb241fee6]
+
+The resulting flag is: `CTF{OpenGLMoonMoonG0esT0TheMoon}`

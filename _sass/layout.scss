@@ -43,7 +43,7 @@ header {
 		flex-direction: column;
 		align-items: center;
 		justify-content: space-between;
-		@media #{$tablet} {
+		@media #{$desktop } {
 			flex-direction: row;
 		}
 	}
@@ -73,7 +73,7 @@ header {
           	z-index: 1;
 			padding-bottom: 5px;
 
-			@media #{$tablet} {
+			@media #{$desktop } {
 				display: none;
 			}
 
@@ -102,12 +102,12 @@ header {
 	background: #212121;
 	padding: 1px 0 0 0;
 	position: relative;
-	h2 {
+	h1, h2, h3, h4, h5, h6 {
 		font-weight: bold;
       	color: $brand-color;
 	}
 	@media #{$phone} {
-		h2 {
+		h1 {
 			font-size: 1.5em;
 		}
 		p {
@@ -167,15 +167,16 @@ section + section {
 	margin: 60px 0;
 }
 
-.page h2 {
+.page h1 {
 	text-align: center;
 }
 
 blockquote {
-	padding: 18px 25px;
+	padding: 18px 25px 18px 45px;
 	margin: 0;
 	quotes: "\201C""\201D""\2018""\2019";
 	font-style: italic;
+	text-indent: -3em;
 
 	.author {
 		display: block;
@@ -186,6 +187,10 @@ blockquote {
 	}
 
 	p {
+		text-indent: 0;
+		display: block;
+	}
+	p:first-child {
 		display: inline;
 	}
 }
@@ -197,6 +202,7 @@ blockquote:before {
 	line-height: 0.1em;
 	margin-right: 0.25em;
 	vertical-align: -0.4em;
+	font-family: $helvetica;
 }
 
 .square-image {

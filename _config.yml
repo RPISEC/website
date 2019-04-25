@@ -2,7 +2,9 @@
 # Site
 
 title: RPISEC
-url: "https://proud-alligator.cloudvent.net"
+url: "https://rpis.ec"
+markdown: kramdown
+highlighter: rouge
 baseurl:
 google_analytics_key:
 google_maps_javascript_api_key:
@@ -31,7 +33,7 @@ collections:
 
 paginate: 10
 paginate_path: "/blog/:num/"
-permalink: pretty
+permalink: /blog/:title/
 
 defaults:
   -

@@ -2,12 +2,17 @@
 	list-style: none;
 	padding: 0;
 
+	.post-date {
+		white-space: nowrap;
+	}
+
 	li {
 		margin: 100px 0;
 	}
 }
 
 .blog-post {
+	word-break: break-word;
 	.author {
 		padding: 30px 0 0 0;
 		border: 1px solid #eee;
@@ -24,21 +29,28 @@
 		}
 	}
 
+	h1 {
+		margin-bottom: .7em;
+	}
+
 	h3 {
 		margin: 0;
 		a {
 			color: $brand-color;
 			text-decoration: none;
 			font-weight: bold;
-			font-size: 1.3em;
 			&:hover {
 				text-decoration: underline;
 			}
 		}
 	}
 
-	h2 {
+	h1, h2, h3, h4, h5, h6 {
 		text-align: left;
+	}
+
+	pre {
+		white-space: pre-wrap;
 	}
 
 	.blog-navigation {
@@ -62,9 +74,14 @@
 		border-bottom: 1px solid #eee;
 		font-size: .9em;
 
+		.blog-categories {
+			float: right;
+		}
+
 		.blog-filter {
 			display: inline-block;
 			text-align: left;
+			text-transform: lowercase;
 
 			a {
 				position: relative;
@@ -74,10 +91,6 @@
 
 		a {
 			text-decoration: none;
-		}
-
-		.post-date {
-			float: right;
 		}
 
 		&:after {
@@ -93,6 +106,16 @@
 		}
 		p {
 			font-size: 1em;
+		}
+		@media #{$phone} {
+			ul {
+				padding-left: 1em;
+			}
+		}
+        @media #{$desktop } {
+			ul {
+				padding-left: 2em;
+			}
 		}
 	}
 }

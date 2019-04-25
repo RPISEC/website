@@ -5,7 +5,7 @@
 		display: block;
 	}
 
-	@media #{$tablet} {
+	@media #{$desktop } {
 		border: 0;
 		padding: 0 20px;
 
@@ -17,10 +17,11 @@
 
 nav {
 	text-transform: uppercase;
-	font-size: .8em;
+	font-size: 1em;
 	width: 100%;
 
-	@media #{$tablet} {
+	@media #{$desktop } {
+        font-size: .8em;
 		text-align: right;
 		padding: 0 20px;
 	}
@@ -33,7 +34,7 @@ nav {
 		color: rgba(255,255,255,.8);
 		display: none;
 
-		@media #{$tablet} {
+		@media #{$desktop } {
 			display: inline-block;
 			padding: 10px;
 		}
@@ -44,7 +45,7 @@ nav {
 		color: #fff;
 	}
 
-	@media #{$tablet} {
+	@media #{$desktop } {
 		a.highlight {
 			border: 1px #ccc solid;
 			border-radius: 5px;

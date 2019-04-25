@@ -3,7 +3,7 @@
 	margin: 10px;
 	padding: 0;
 
-	@media #{$tablet} {
+	@media #{$desktop } {
 		-webkit-flex: 1 0 180px;
 		flex: 1 0 180px;
 	}
