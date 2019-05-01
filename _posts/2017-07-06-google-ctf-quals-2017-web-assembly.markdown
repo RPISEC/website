@@ -1,6 +1,6 @@
 ---
 title: Google CTF Quals 2017 - Web Assembly
-authors: Nick Burnett
+authors: Amy Burnett
 date: 2017-07-06
 categories: web
 ---
