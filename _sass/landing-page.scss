@@ -41,8 +41,8 @@
 		color: #fff;
 	}
   	img.biglogo {
-		width: 45vh;
-		height: 45vh;
+		width: 40vh;
+		height: 40vh;
         max-width: 80vw;
 		max-height: 80vw;
 	}
@@ -62,7 +62,7 @@
 		}
 	}
 
-	.content section:nth-child(even) .flex {
-		flex-direction: row-reverse;
-	}
+	//.content section:nth-child(even) .flex {
+	//	flex-direction: row-reverse;
+	//}
 }

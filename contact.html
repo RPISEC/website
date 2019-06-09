@@ -1,178 +1,46 @@
 ---
 title: Contact
-heading: Get in touch today
-description: We'd love to help you improve your sales.
-
-map:
-  latitude: -45.8787605
-  longitude: 170.5027976
-  address: "1 George Street, Dunedin, New Zealand"
-  zoom: 13
+description: Getting in Touch
 ---
-<div class="map" id="map"></div>
 
-
-<div class="contact-box">
-	<form action="{{ site.baseurl }}/contact-success/" method="post" class="contact-form">
-		<input type="hidden" name="_to" value="support@example.com" />
-		<input type="text" name="_gotcha" style="display: none;">
-
-		<label for="name">Full Name</label>
-		<input type="text" name="name" id="name" placeholder="Enter your name..." />
-
-		<label for="email">Email Address</label>
-		<input type="email" name="email" id="email" placeholder="Enter your email..." required />
-
-		<label for="message">Message</label>
-		<textarea name="message" id="message" placeholder="Enter your message..."></textarea>
-
-		<input type="submit" value="Send Message" />
-	</form>
-
-	<div class="contact-details">
-		<h3 class="editable">Address</h3>
-		<address><a target="_blank" href="https://www.google.com/maps/place/{{ page.map.address | url_encode }}">{{ page.map.address | replace: ", ", ", <br>" }}</a></address>
-
-		<h3 class="editable">Email</h3>
-		<p><a href="mailto:support@example.com">support@example.com</a></p>
-	</div>
+<div class="content-text">
+    <section>
+        <div class="container flex">
+            <div class="text editable">
+                <h2>Email</h2>
+                <p>The easiest way to contact us is by email. Anything sent to this address will be automatically forwarded to the current club officers.</p>
+                <p>Additionally, we have included our PGP key for protecting sensitive messages.</p>
+            </div>
+            <div class="sidetext text editable">
+                <p><a href="mailto:contact@rpis.ec">contact@rpis.ec</a> </p>
+                <p><a href="/public.pgp">public.pgp</a></p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container flex">
+            <div class="text editable">
+                <h2>IRC</h2>
+                <p>No computer security organization would be complete without its <a href="https://wikipedia.org/wiki/Internet_Relay_Chat">IRC</a> server.</p>
+                <p>As old and hacker-cliché as it may be, IRC remains RPIESC's most active communications platform for current members and alumni alike.</p>
+                <p>If you are looking for a more casual or immediate contact method, pick out a client, connect to our server, and join the #rpisec channel.</p>
+            </div>
+            <div class="sidetext text editable">
+                <p><a href="ircs://irc.rpis.ec:6697/rpisec">irc.rpis.ec:6697</a></p>
+                <p><a href="https://kiwiirc.com/nextclient/irc.rpis.ec/#rpisec">#rpisec</a></p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container flex">
+            <div class="text editable">
+                <h2>Social Media</h2>
+                <p>RPISEC additionally maintains a social media presence on Twitter.</p>
+                <p>If you are looking for a more informal or convenient contact method, feel free to drop us a DM or tweet.</p>
+            </div>
+            <div class="sidetext text editable">
+                <p><a href="https://twitter.com/RPISEC">@RPISEC</a></p>
+            </div>
+        </div>
+    </section>
 </div>
-
-<script type="text/javascript">
-	window.mapData = {{ page.map | jsonify }};
-
-	function initMap() {
-		var myOptions = {
-			scrollwheel: false,
-			draggable: false,
-			panControl: false,
-			disableDefaultUI: true,
-			styles: [{
-				"featureType": "all",
-				"elementType": "labels.text.fill",
-				"stylers": [{
-					"saturation": 36
-				}, {
-					"color": "#000000"
-				}, {
-					"lightness": 40
-				}]
-			}, {
-				"featureType": "all",
-				"elementType": "labels.text.stroke",
-				"stylers": [{
-					"visibility": "on"
-				}, {
-					"color": "#000000"
-				}, {
-					"lightness": 16
-				}]
-			}, {
-				"featureType": "all",
-				"elementType": "labels.icon",
-				"stylers": [{
-					"visibility": "off"
-				}]
-			}, {
-				"featureType": "administrative",
-				"elementType": "geometry.fill",
-				"stylers": [{
-					"color": "#000000"
-				}, {
-					"lightness": 20
-				}]
-			}, {
-				"featureType": "administrative",
-				"elementType": "geometry.stroke",
-				"stylers": [{
-					"color": "#000000"
-				}, {
-					"lightness": 17
-				}, {
-					"weight": 1.2
-				}]
-			}, {
-				"featureType": "landscape",
-				"elementType": "geometry",
-				"stylers": [{
-					"color": "#000000"
-				}, {
-					"lightness": 20
-				}]
-			}, {
-				"featureType": "poi",
-				"elementType": "geometry",
-				"stylers": [{
-					"color": "#000000"
-				}, {
-					"lightness": 21
-				}]
-			}, {
-				"featureType": "road.highway",
-				"elementType": "geometry.fill",
-				"stylers": [{
-					"color": "#000000"
-				}, {
-					"lightness": 17
-				}]
-			}, {
-				"featureType": "road.highway",
-				"elementType": "geometry.stroke",
-				"stylers": [{
-					"color": "#000000"
-				}, {
-					"lightness": 29
-				}, {
-					"weight": 0.2
-				}]
-			}, {
-				"featureType": "road.arterial",
-				"elementType": "geometry",
-				"stylers": [{
-					"color": "#000000"
-				}, {
-					"lightness": 18
-				}]
-			}, {
-				"featureType": "road.local",
-				"elementType": "geometry",
-				"stylers": [{
-					"color": "#000000"
-				}, {
-					"lightness": 16
-				}]
-			}, {
-				"featureType": "transit",
-				"elementType": "geometry",
-				"stylers": [{
-					"color": "#000000"
-				}, {
-					"lightness": 19
-				}]
-			}, {
-				"featureType": "water",
-				"elementType": "geometry",
-				"stylers": [{
-					"color": "#000000"
-				}, {
-					"lightness": 17
-				}]
-			}],
-			zoom: window.mapData.zoom,
-			maxZoom: window.mapData.zoom,
-			minZoom: window.mapData.zoom,
-			center: new google.maps.LatLng(window.mapData.latitude, window.mapData.longitude),
-			mapTypeId: google.maps.MapTypeId.ROADMAP
-		};
-		map = new google.maps.Map(document.getElementById("map"), myOptions);
-		marker = new google.maps.Marker({
-			map: map,
-			position: new google.maps.LatLng(window.mapData.latitude, window.mapData.longitude)
-		});
-
-		google.maps.event.addDomListener(window, "resize", function () {
-			map.setCenter(myOptions.center);
-		});
-	}
-</script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key={{ site.google_maps_javascript_api_key }}&amp;callback=initMap"></script>

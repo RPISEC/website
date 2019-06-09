@@ -116,6 +116,15 @@ header {
 	}
 }
 
+.content-text {
+	section {
+		padding: 25px 0;
+		@media #{$phone} {
+			padding-bottom: 2.5em;
+		}
+	}
+}
+
 .screenshot{
 	max-width: 100%;
 	height: auto;
@@ -158,10 +167,15 @@ section + section {
 }
 
 .subtext {
+	font-size: 1.38em;
 	margin-top: 10px;
 	text-align: center;
 }
 
+.sidetext {
+	font-size: 1.38em;
+	text-align: center;
+}
 
 .cta {
 	margin: 60px 0;
