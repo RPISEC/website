@@ -55,8 +55,8 @@ obfuscated, and on the right is a control flow graph for the *same* program, com
 llvm-obfuscator using only the Control-Flow Flattening pass.
 
 <p style="text-align: center">
-  <img src="{filename}/assets/cff_orig.PNG" style="display:inline-block">
-  <img src="{filename}/assets/cff_cfg.PNG"  style="display:inline-block">
+  <img src="{{ site.baseurl }}/assets/cff_orig.PNG" style="display:inline-block">
+  <img src="{{ site.baseurl }}/assets/cff_cfg.PNG"  style="display:inline-block">
 </p>
 
 Here, green nodes denote the original basic blocks of the function, and blue nodes form
@@ -68,7 +68,7 @@ Another way we can visualize this CFG is by using IDA to group all of the blue b
 blocks (i.e. the *backbone*) into a single node. This results in a CFG which appears
 closer to other control-flow flattening passes commonly seen in literature.
 
-![]({filename}/assets/cff_cln.PNG)
+![]({{ site.baseurl }}/assets/cff_cln.PNG)
 
 At this point, it's clear that all control flow from the original program is completely
 obscured. It is also effective to note that this looks similar to a switch case statement,
@@ -95,7 +95,7 @@ In order to understand the weaknesses in this particular implementation of the c
 flow flattening pass, we'll need to discuss the backbone of a function emitted by the pass
 in more detail. We'll use the following example:
 
-![]({filename}/assets/cff_state.PNG)
+![]({{ site.baseurl }}/assets/cff_state.PNG)
 
 Shown above is a zoomed-in view of a node in the backbone of the previously obfuscated
 program. Pretty much each backbone node looks analogous; it reads the current state
@@ -136,7 +136,7 @@ Again, this algorithm will only work given at least one definition of the state 
 Luckily, the first basic block generally contains the first definition of the state
 variable, before it jumps right into the state machine, as seen below:
 
-![]({filename}/assets/cff_entry.PNG)
+![]({{ site.baseurl }}/assets/cff_entry.PNG)
 
 We thus target this definition of the state variable, as it is easy to find (via
 heuristics or via human interaction), and every backbone basic block that we're targeting
@@ -149,14 +149,14 @@ about them. In this case, a real basic block can either have a single successor 
 multiple successors (i.e. an unconditional jump or a conditional jump with a fall
 through). A real basic block with an unconditional jump looks something like below:
 
-![]({filename}/assets/cff_unconditional.PNG)
+![]({{ site.baseurl }}/assets/cff_unconditional.PNG)
 
 As we can see, we write a constant to the state variable, and return to dispatch. This
 means that the next real basic block we're taking corresponds to the case `0xfcbce33c`. A
 real basic block with multiple successors is slightly more interesting, as the `cmov` gets
 expanded into multiple basic blocks in the MLIL view:
 
-![]({filename}/assets/cff_conditional.PNG)
+![]({{ site.baseurl }}/assets/cff_conditional.PNG)
 
 Here, we're transforming the conditional from the original program into one which sets
 the state variable to the appropriate constant. In other words, the original source
@@ -231,7 +231,7 @@ Dealing with conditional jumps is a little trickier. The goal now is to determin
 of two possible outgoing states is the false branch, and which is the true branch. For
 this, we utilize the SSA form of the medium-level IL that we've already been looking at.
 
-![]({filename}/assets/cff_conditional_ssa.png)
+![]({{ site.baseurl }}/assets/cff_conditional_ssa.png)
 
 This shows an example of a block with two outgoing states in SSA form. The instructions
 that influence the selection of the next state have been highlighted here. We can better
@@ -327,13 +327,13 @@ We can visualize the result of these removals with a few examples. First, we loo
 dead instructions in a block with an unconditional jump. There is no def-use chain to
 follow here, so not much change is involved.
 
-![]({filename}/assets/cff_unconditional_dead.png)
+![]({{ site.baseurl }}/assets/cff_unconditional_dead.png)
 
 All of the instructions highlighted in red here were added by the flattening pass and can
 be removed. In a block with a conditional jump, there are few more instructions that can
 be removed:
 
-![]({filename}/assets/cff_conditional_dead.png)
+![]({{ site.baseurl }}/assets/cff_conditional_dead.png)
 
 Removing these instructions leaves more than enough room for our own patches, while
 cleaning up dead code left by the flattening pass as a bonus. In both cases, we make note
@@ -376,15 +376,15 @@ After applying this, we end up with the following results for a block with an
 unconditional jump (patched block on the right):
 
 <p style="text-align: center">
-  <img src="{filename}/assets/cff_unconditional_dead.png" style="display:inline-block">
-  <img src="{filename}/assets/cff_unconditional_fixed.png"  style="display:inline-block">
+  <img src="{{ site.baseurl }}/assets/cff_unconditional_dead.png" style="display:inline-block">
+  <img src="{{ site.baseurl }}/assets/cff_unconditional_fixed.png"  style="display:inline-block">
 </p>
 
 And for a block with a conditional jump:
 
 <p style="text-align: center">
-  <img src="{filename}/assets/cff_conditional_dead.png" style="display:inline-block">
-  <img src="{filename}/assets/cff_conditional_fixed.png"  style="display:inline-block">
+  <img src="{{ site.baseurl }}/assets/cff_conditional_dead.png" style="display:inline-block">
+  <img src="{{ site.baseurl }}/assets/cff_conditional_fixed.png"  style="display:inline-block">
 </p>
 
 At this point the original CFG of the program has been completely restored.
@@ -403,18 +403,18 @@ earlier in this process, so it's trivial to go through the blocks and `nop` them
 To show the effectiveness of the deflattening, let's look at how it deobfuscates a test
 program. Here is the original CFG of `main`, which is the end goal:
 
-![]({filename}/assets/cff_example_orig.png)
+![]({{ site.baseurl }}/assets/cff_example_orig.png)
 
 Here is the same function after applying control flow flattening:
 
-![]({filename}/assets/cff_example_cff.png)
+![]({{ site.baseurl }}/assets/cff_example_cff.png)
 
 Here we can see the backbone running down the right side of the graph, with all the
 original blocks laid out on the left side.
 
 Finally, here is the CFG after running the deobfuscator:
 
-![]({filename}/assets/cff_example_deobf.png)
+![]({{ site.baseurl }}/assets/cff_example_deobf.png)
 
 The recovered CFG comes very close to the original, with a few key differences:
 
@@ -435,7 +435,7 @@ The steps to deobfuscate a flattened function are:
 
 The following clip demonstrates how to do this:
 
-![demo]({filename}/assets/cff_demo.gif)
+![demo]({{ site.baseurl }}/assets/cff_demo.gif)
 
 [link-sub]:  https://github.com/obfuscator-llvm/obfuscator/wiki/Instructions-Substitution
 [link-bcf]:  https://github.com/obfuscator-llvm/obfuscator/wiki/Bogus-Control-Flow

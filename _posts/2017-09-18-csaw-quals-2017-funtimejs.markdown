@@ -305,7 +305,7 @@ a virtual memory space that when accessed, is translated to a physical address. 
 it know how to map which virtual address to which physical address for which process? With
 the process's page directory of course. Wikipedia has a pretty good visual. 
 
-![Page Tables]({filename}/assets/funtimejs_page_tables.png)
+![Page Tables]({{ site.baseurl }}/assets/funtimejs_page_tables.png)
 
 You start at the outermost layer and use the high bits of the virtual address to index
 into a page directory and get a pointer to another table (a page table). You use some of

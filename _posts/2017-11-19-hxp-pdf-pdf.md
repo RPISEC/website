@@ -5,7 +5,7 @@ date: 2017-11-19
 categories: forensics
 ---
 
->RTFM! and a link to [pdf.pdf]({filename}/assets/pdf.pdf).
+>RTFM! and a link to [pdf.pdf]({{ site.baseurl }}/assets/pdf.pdf).
 
 The PDF contained a bunch of different types of content, like text, a vector
 drawing, a bitmap image, embedded fonts, internal and external links, annotated
@@ -113,7 +113,7 @@ It was a hidden page with page contents of object 83 and resource object 43.
 Object 43 was a reference to XObject 85, a vector image. Hawkheart wrote a
 renderer for it, and we got this nice picture of a flag:
 
-![vector image of a flag]({filename}/assets/hxp_pdf_vector_flag.png)
+![vector image of a flag]({{ site.baseurl }}/assets/hxp_pdf_vector_flag.png)
 
 That's pretty, but not very useful. Object 83 was trickier:
 
@@ -187,7 +187,7 @@ All the other fonts had lines that looked like:
 The relative path and having it called "mod" seemed suspicious, so we extracted
 the ttf file (object 99) and opened it in FontForge.
 
-![glyphs that look like a rearranged flag]({filename}/assets/hxp_pdf_fontforge.png)
+![glyphs that look like a rearranged flag]({{ site.baseurl }}/assets/hxp_pdf_fontforge.png)
 
 That doesn't look like the alphabet. Since this was 6am, we decoded the flag by
 hand, getting

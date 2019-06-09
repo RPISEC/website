@@ -15,9 +15,9 @@ and giving us source :) )
 
 Given is an ELF, which is a Rust binary, and a Verilog file which contains a 'circuit'. 
 
-[ELF](https://github.com/perribus/ctf_writeups/blob/master/defconquals18/smcauth/smcauth)
+[ELF]({{ site.baseurl }}/assets/smcauth)
 
-[Verilog](https://github.com/perribus/ctf_writeups/blob/master/defconquals18/smcauth/smcauth)
+[Verilog]({{ site.baseurl }}/assets/smcauth_syn.v)
 
 
 Example command line input:
@@ -93,12 +93,12 @@ decryption.
 
 This is the state right before a call to decrypt:
 
-![](https://krx.re/u/59304336fa05cdb83678d9f0b78d2c6dc53bb3eb.png)
+![]({{ site.baseurl }}/assets/59304336fa05cdb83678d9f0b78d2c6dc53bb3eb.png)
 
 This is right after it tries and fails to decrypt an incorrect entry in a gate's truth
 table:
 
-![](https://krx.re/u/b72b7b2a4c63b7b0e0730b328c69e1a4b45ef4e2.png)
+![]({{ site.baseurl }}/assets/b72b7b2a4c63b7b0e0730b328c69e1a4b45ef4e2.png)
 
 The 8 QWORDS being printed at the bottom are the output from the failed encryption. Notice
 how the third line has bits without obvious pattern. 
@@ -109,11 +109,11 @@ to identify it as a successful decryption.
 
 This is an example of output when the two gate inputs had the same value:
 
-![](https://krx.re/u/5186dfc2b6083b2652999867327112a7c899bb2f.png)
+![]({{ site.baseurl }}/assets/5186dfc2b6083b2652999867327112a7c899bb2f.png)
 
 This is an example of output when the two inputs had different values:
 
-![](https://krx.re/u/ab8f2f8fa9de4182c272c5b7d7836a2d3186a6be.png)
+![]({{ site.baseurl }}/assets/ab8f2f8fa9de4182c272c5b7d7836a2d3186a6be.png)
 
 This is where we noticed something interesting. In the gate output in the case with same
 valued initial inputs (i.e. when both parties input the same secret, this is regardless of

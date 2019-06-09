@@ -13,7 +13,7 @@ Some parts of this writeup will include background information about the concept
 
 ### Challenge Description
 
-![WASM Retro UI]({filename}/assets/WASM_ui.png)
+![WASM Retro UI]({{ site.baseurl }}/assets/WASM_ui.png)
 
 This challenge takes place on a very retro looking page the lets you drag assembly
 instructions from the sidebar into the main page. One button lets us compile the code, and
@@ -383,13 +383,13 @@ for(var i=0; i<128; i++) {
 Running this with the 'Guess The Flag' test causes all the test cases to pass, and have it
 print the flag.
 
-![Getting the flag locally]({filename}/assets/WASM_flag_local.png)
+![Getting the flag locally]({{ site.baseurl }}/assets/WASM_flag_local.png)
 
 Now we just need to submit it so it will run on the remote server.
 
 It took a few tries, because I kept getting 500 errors.  (Although I knew it was working
 because I was getting requests for the payload file). Finally it went though:
 
-![Getting the flag on the server]({filename}/assets/WASM_flag_server.png)
+![Getting the flag on the server]({{ site.baseurl }}/assets/WASM_flag_server.png)
 
 The final flag is `CTF{_r3m0v3_th3_c0mm4s_plz_kthxbye_}`

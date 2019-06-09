@@ -47,7 +47,7 @@ could not find anything largely different between `rao_bash` and a bash we compi
 ourselves with a similar compiler version, i.e. by using diaphora. However, it seems we
 missed a very quick-and-dirty xor, as seen below in the main function.
 
-![Quick and dirty xor]({filename}/assets/rao_bash_xor.png)
+![Quick and dirty xor]({{ site.baseurl }}/assets/rao_bash_xor.png)
 
 It looks like argv is checksummed, and if the checksum is valid it moves to
 `sh_login_init()`. Obviously, we don’t quite care about the checksum, as it’s very lossy
@@ -115,7 +115,7 @@ Here, read pulls 32 bytes from the user and places them onto the stack, crashing
 failed (by jumping into another instruction). Then, we immediately begin verifying the
 user input, as below:
 
-![CFG for main read loop]({filename}/assets/rao_bash_cfg.jpeg)
+![CFG for main read loop]({{ site.baseurl }}/assets/rao_bash_cfg.jpeg)
 
 Here, we see some obfuscation techniques at hand as well, notably the use of the rdrand
 instruction to generate some random values which are xor’d with the hashed user input.

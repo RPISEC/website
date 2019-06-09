@@ -348,10 +348,10 @@ END
 
 Flag captured!
 
-[greeting_page]:{filename}/assets/greeting_page.png
-[flag]:{filename}/assets/flag.png
-[it_worked]:{filename}/assets/collide_hash.gif
-[cookie_sign_fail]:{filename}/assets/cookie_sign_fail.png
-[getting_admin]:{filename}/assets/getting_admin.gif
-[blank_verify]:{filename}/assets/blank_verify.png
-[secret_value_leak]:{filename}/assets/secret_value_leak.png
+[greeting_page]:{{ site.baseurl }}/assets/greeting_page.png
+[flag]:{{ site.baseurl }}/assets/flag.png
+[it_worked]:{{ site.baseurl }}/assets/collide_hash.gif
+[cookie_sign_fail]:{{ site.baseurl }}/assets/cookie_sign_fail.png
+[getting_admin]:{{ site.baseurl }}/assets/getting_admin.gif
+[blank_verify]:{{ site.baseurl }}/assets/blank_verify.png
+[secret_value_leak]:{{ site.baseurl }}/assets/secret_value_leak.png

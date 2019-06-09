@@ -18,7 +18,7 @@ script to re-symbolize function calls, but we plan to make one soon-ish :)
 We can see the huge routine which calls LoadLibrary on every OpenGL function, at
 `sub_4032c0`.
 
-![GLEW lazy loading functions]({filename}/assets/IDA_glew.png)
+![GLEW lazy loading functions]({{ site.baseurl }}/assets/IDA_glew.png)
 
 Instead of symbolizing (by hand) all of the symbols, we only bothered to load ones which
 had valid XREFs to them, saving a bit of time.
@@ -33,14 +33,19 @@ which I had thought to be introduced in OpenGL 4.3.
 The program simply opens up a window, and asks for a password. After we've entered 32
 characters, the program either responds "good" (presumably), or "Nope".
 
-![Running the program]({filename}/assets/moon.png)
+![Running the program]({{ site.baseurl }}/assets/moon.png)
 
 When we XREF the string Nope, we see that it is used when constructing the texture to be
 printed for this SDL event loop iteration. Not too far from "Nope" do we find "Good", and
 we notice that "Good" is only selected if a particular global variable is set. We trace
 this back to the following code in main:
 
-[gist:id=68518a29e3c22e48b3c9fb50823a78f4]
+```c
+if ( Size != size || Size && memcmp(Memory, Buf2, Size) )
+  should_compute = 1;
+else
+  should_compute = 2;
+```
 
 We want `should_compute` here to be 2, meaning the memcmp succeeded. `Buf2` is the
 following string:
@@ -61,7 +66,25 @@ first argument, and the hash is written out to the second argument. Nothing much
 here, however, though we do see references to `glUseProgram` and `glDispatchCompute`, as
 seen below:
 
-[gist:id=6dd2d59bad3c3f624614d792c8062a82]
+```c
+glUseProgram(glComputeProgram);
+// ...
+buffer = glMapBuffer(37074i64, 35002i64);
+// ... buffer initialization
+glUnmapBuffer(37074i64, v10);
+glDispatchCompute(8i64, 8i64, 1i64);
+GLint fence = glFenceSync(37143i64, 0i64);
+if ( (glClientWaitSync(fence, 1i64, 1000000000i64) - 37147)
+        & 0xFFFFFFFD )
+{
+    glMemoryBarrier(0xFFFFFFFFi64);
+    glDeleteSync(v20);
+    buffer = (char *)glMapBuffer(37074i64, 35002i64);
+    // ... save the hashed password out to the main function
+    glUnmapBuffer(37074i64, buffer);
+    glUseProgram(0i64);
+}
+```
 
 Although we can see the fragment and vertex shaders in clear view in the strings, we can't
 see any reference to the compute shader glsl source. We assume it's encrypted somehow, so
@@ -70,7 +93,74 @@ a wild guess, as the shader could have been precompiled somehow but we punt on t
 
 The dumped source is as follows, after adding the proper formatting:
 
-[gist:id=15da5d32f3cf793edb39e3751b521e6e]
+```glsl
+#version 430
+layout(local_size_x=8,local_size_y=8) in;
+layout(std430,binding=0) buffer shaderExchangeProtocol{
+    uint state[64];
+    uint hash[64];
+    uint password[32];
+};
+vec3 calc(uint p) {
+    float r = radians(p);
+    float c = cos(r);
+    float s = sin(r);
+    // rotation matrix
+    mat3 m  = mat3(  c, -s,0.0,
+                     s,  c,0.0,
+                   0.0,0.0,1.0);
+    vec3 pt = vec3(1024.0,0.0,0.0);
+    vec3 res= m*pt;
+    res+=vec3(2048.0,2048.0,0.0);
+    return res;
+}
+uint extend(uint e) {
+    uint i;
+    uint r=e^0x5f208c26;
+    for (i=15;i<31;i+=3) {
+        uint f=e<<i;
+        r^=f;
+    }
+    return r;
+}
+uint hash_alpha(uint p) {
+    vec3 res=calc(p);
+    return extend(uint(res[0]));
+}
+uint hash_beta(uint p) {
+    vec3 res=calc(p);
+    return extend(uint(res[1]));
+}
+void main() {
+    uint idx = gl_GlobalInvocationID.x +
+               gl_GlobalInvocationID.y * 8;
+    uint final;
+    if (state[idx] != 1) {
+        return;
+    }
+    if ((idx&1)==0) {
+        final=hash_alpha(password[idx/2]);
+    } else {
+        final=hash_beta(password[idx/2]);
+    }
+    uint i;
+    for (i=0;i<32;i+=6) {
+        final ^= idx << i;
+    }
+    uint h=0x5a;
+    for (i=0;i<32;i++){
+        uint p=password[i];
+        uint r=(i*3)&7;
+        p=(p<<r)|(p>>(8-r));
+        p&=0xff;
+        h^=p;
+    }
+    final^=(h|(h<<8)|(h<<16)|(h<<24));
+    hash[idx]=final;
+    state[idx]=2;
+    memoryBarrierShared();
+}
+```
 
 ## Reversing the Compute Shader
 
@@ -136,13 +226,42 @@ time, we opted instead to compute a lexicon of characters up front with the debu
 then took the hash of each character and made them idx-independent, as well as un-xor'd
 their h terms, like so:
 
-[gist:id=092a53e402f71ab1d5da3ebc9eedbe05]
+```python
+def xor_position(ret, idx):
+    from ctypes import c_uint
+    for i in range(0, 32, 6):
+        ret ^= (idx << i)
+    return c_uint(ret).value
+
+lexicon = { }
+def add_to_lexicon(alpha, chars, h):
+    alpha = [ int(alpha[i:i+8], 16) for i in range(0, 512, 16) ]
+    idx = 0
+    assert len(alpha) == len(chars)
+    for i,j in zip(chars, alpha):
+        # idx * 2 since we only care about even-numbered idx's
+        lexicon[xor_position(j ^ h, idx*2)] = i
+        idx += 1
+alpha1 = "<hash for ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef here>"
+add_to_lexicon(alpha1, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef", 0x7a7a7a7a)
+alpha2 = "<hash for ghijklmnopqrstuvwxyz_1234567890- here>"
+add_to_lexicon(alpha2, "ghijklmnopqrstuvwxyz_1234567890-", 0x93939393)
+```
 
 Now, all we need to do is take `Buf2`'s characters and render them also idx-independent,
 un-xor them with the known h for this password (which turns out to be `0x6f6f6f6f`,
 computed in the previous section) and then match each hash with the known values in our
 lexicon, as below:
 
-[gist:id=79c864f645e5a827afa7076cb241fee6]
+```python
+Buf2 = "<hash for Buf2 here, shown above>"
+Buf2 = [ int(Buf2[i:i+8], 16) for i in range(0, 512, 16) ]
+idx = 0
+for i in Buf2:
+    print lexicon[xor_position(i ^ 0x6f6f6f6f, idx*2)]
+    idx += 1
+# NOTE: our lexicon originally didn't have "{}" so this will throw
+# an exception as is...
+```
 
 The resulting flag is: `CTF{OpenGLMoonMoonG0esT0TheMoon}`
