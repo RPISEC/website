@@ -54,11 +54,15 @@
 		@include flexbox;
 		align-items: center;
 		flex-direction: row;
+        justify-content: space-between;
+
+		.split {
+			max-width: 48%;
+		}
 
 		.text, .image {
 			-webkit-flex: 1;
 			flex: 1;
-			padding: 0 20px;
 		}
 	}
 
