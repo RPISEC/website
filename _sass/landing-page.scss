@@ -62,7 +62,7 @@
 		}
 	}
 
-	//.content section:nth-child(even) .flex {
-	//	flex-direction: row-reverse;
-	//}
+	.flipped {
+		flex-direction: row-reverse;
+	}
 }

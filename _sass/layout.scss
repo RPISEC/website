@@ -1,4 +1,4 @@
-.container, .text-container {
+.container, .text-container, .home-container {
 	margin: 0 auto;
 	position: relative;
 	padding: 0 20px;
@@ -11,6 +11,11 @@
 .text-container {
 	color: #ffffff;
 	max-width: 750px;
+}
+
+.home-container {
+	color: #ffffff;
+	max-width: 950px;
 }
 
 .container {
