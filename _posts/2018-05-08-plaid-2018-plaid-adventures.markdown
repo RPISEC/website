@@ -2,7 +2,7 @@
 title: Plaid CTF 2018 - Plaid Adventures
 authors: Toshi Piazza
 date: 2018-05-08
-categories: reversing
+categories: reverse-engineering
 ---
 
 This was a (reasonably) fun challenge from Plaid CTF this year, and one of the only
