@@ -1,4 +1,4 @@
-.container, .text-container, .home-container {
+.container, .text-container, .wide-container {
 	margin: 0 auto;
 	position: relative;
 	padding: 0 20px;
@@ -13,7 +13,7 @@
 	max-width: 750px;
 }
 
-.home-container {
+.wide-container {
 	color: #ffffff;
 	max-width: 950px;
 }
@@ -155,7 +155,7 @@ header {
 }
 
 section {
-	padding: 100px 0;
+	padding: 50px 0;
 	@media #{$phone} {
         padding-bottom: 3.5em;
 	}
@@ -178,7 +178,7 @@ section + section {
 }
 
 .sidetext {
-	font-size: 1.38em;
+	font-size: 1.5em;
 	text-align: center;
 }
 
