@@ -59,8 +59,6 @@ defaults:
   -
     scope:
       path: "contact.html"
-    values:
-      full_width: true
 
 jekyll-archives:
   enabled:

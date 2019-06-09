@@ -1,4 +1,4 @@
-.container, .text-container, .wide-container {
+.container, .text-container, .container {
 	margin: 0 auto;
 	position: relative;
 	padding: 0 20px;
@@ -13,13 +13,8 @@
 	max-width: 750px;
 }
 
-.wide-container {
-	color: #ffffff;
-	max-width: 950px;
-}
-
 .container {
-	max-width: 1140px;
+	max-width: 900px;
 
 	&.max-container {
 		max-width: 100%;
