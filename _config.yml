@@ -56,9 +56,6 @@ defaults:
       path: "index.html"
     values:
       layout: "default"
-  -
-    scope:
-      path: "contact.html"
 
 jekyll-archives:
   enabled:
