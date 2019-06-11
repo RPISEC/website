@@ -1,6 +1,6 @@
 {% assign symbols = "ç ｸ 日 ﾊ ﾐ ﾋ ｰ ｳ ｼ ﾅ ﾓ ﾆ ｻ ﾜ ﾂ ｵ ﾘ ｱ ﾎ ﾃ ﾏ ｹ ﾒ ｴ ｶ ｷ ﾑ ﾕ ﾗ ｾ ﾈ ｽ ﾀ ﾇ ﾍ ｦ ｲ ｸ ｺ ｿ ﾁ ﾄ ﾉ ﾌ ﾔ ﾖ ﾙ ﾚ ﾛ ﾝ 0 1 2 3 4 5 6 7 8 9 Z : ・ . " = * + - < > ¦ ｜" | split: " " %}
 <div class="matrix">
     {% for i in (0..125) %}
-        <div class="o{{ i }}">{{ symbols | sample: 30 }}</div>
+        <div class="notranslate o{{ i }}">{{ symbols | sample: 30 }}</div>
     {% endfor %}
 </div>
