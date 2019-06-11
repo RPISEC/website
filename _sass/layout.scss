@@ -24,6 +24,7 @@
 
 header {
 	color: #fff;
+    background-color: $header-color;
 	padding: 20px 0;
 	position: relative;
 
@@ -100,6 +101,7 @@ header {
 }
 
 .content {
+	background-color: $background-color;
 	padding: 1px 0 0 0;
 	position: relative;
 	h1, h2, h3, h4, h5, h6 {

@@ -64,10 +64,11 @@
 }
 
 footer {
+	color: #fff;
+    background-color: $footer-color;
 	padding: 50px 0 50px 0;
 	font-size: 1.1em;
 	position: relative;
-	color: #fff;
 	text-align: center;
 
 	.copyright {
