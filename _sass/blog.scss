@@ -11,6 +11,15 @@
 	}
 }
 
+.blog-post:first-child {
+	@media #{$desktop } {
+		margin-top: 50px;
+	}
+	@media #{$phone } {
+		margin-top: 0;
+	}
+}
+
 .blog-post {
 	word-break: break-word;
 	.author {
@@ -30,6 +39,9 @@
 	}
 
 	h1 {
+		@media #{$phone} {
+            margin-top: .7em;
+		}
 		margin-bottom: .7em;
 	}
 
@@ -122,6 +134,7 @@
 
 .pagination {
 	text-align: center;
+	padding-bottom: 50px;
 }
 
 .blog-filter {

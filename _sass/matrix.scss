@@ -27,7 +27,7 @@
 
 @for $i from 0 through 125 {
     .o#{$i} {
-        animation: random(3000)+6000 + ms linear random(10000) + ms infinite drop;
+        animation: random(1000)+6000 + ms linear random(10000) + ms infinite drop;
         left: $i*30 + px;
     }
 }
