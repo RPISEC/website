@@ -9,14 +9,30 @@
 	}
 }
 
+.title {
+	h1, h2, h3, h4, h5, h6 {
+		font-weight: bold;
+		color: $brand-color;
+	}
+}
+
 .hero {
 	color: #ffffff;
+    background-color: $hero-color;
 	text-align: center;
 	padding-top: 0;
 	padding-bottom: 2vh;
 	position: relative;
 	p {
 		color: #fff;
+	}
+	@media #{$phone} {
+		h1 {
+			font-size: 1.5em;
+		}
+		p {
+			font-size: 1em;
+		}
 	}
   	img.biglogo {
 		width: 40vh;
