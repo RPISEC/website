@@ -81,9 +81,6 @@ exclude:
   - .jekyll-assets-cache
   - .sass-cache
 
-# -----------
-# CloudCannon
-
 social_icons:
   - Instagram
   - LinkedIn
