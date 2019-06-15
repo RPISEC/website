@@ -160,7 +160,11 @@ section {
 
 @media #{$phone} {
 	section:first-child {
-		padding-top: 20px;
+		padding-top: 30px;
+	}
+
+	section:last-child {
+		padding-bottom: 30px;
 	}
 }
 

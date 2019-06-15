@@ -52,12 +52,17 @@
 
 		.split {
 			max-width: 47.5%;
+			@media #{$phone} {
+					padding-bottom: 20px;
+			}
 		}
 
 		.text, .image {
 			-webkit-flex: 1;
 			flex: 1;
 		}
+
+
 	}
 
 	.flipped {
