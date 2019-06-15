@@ -8,7 +8,7 @@
 @for $i from 0 through 125 {
     .o#{$i} {
         animation: random(16000)+2000 + ms linear random(30000) + ms infinite drop;
-        left: $i*20 + px;
+        left: $i*1 + em;
         will-change: translate;
         overflow: hidden;
         bottom: 100%;
@@ -30,25 +30,6 @@
         -ms-user-select: none;
     }
 }
-
-//@keyframes drop {
-//    from {
-//        -moz-transform: translateY(0) scaleX(-1);
-//    }
-//    to {
-//        -moz-transform: translateY(0) scaleX(-1);
-//        //-moz-transform: translateY(calc(200% + 30px)) scaleX(-1);
-//    }
-//}
-
-//@keyframes drop {
-//    from {
-//        -moz-transform: translateY(0) scaleX(-1);
-//    }
-//    to {
-//        -moz-transform: translateY(calc(200% + 30px)) scaleX(-1);
-//    }
-//}
 
 @keyframes drop {
     from {

@@ -21,14 +21,6 @@
 
 		<meta name="google" content="notranslate">
 
-		{% if jekyll.environment == 'production' and site.google_analytics_ke != '' %}
-			<script>
-				window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-				ga('create', '{{ site.google_analytics_key }}', 'auto');
-				ga('send', 'pageview');
-			</script>
-			<script async src='https://www.google-analytics.com/analytics.js'></script>
-		{% endif %}
 	</head>
 	<body>
         {% include matrix.html %}

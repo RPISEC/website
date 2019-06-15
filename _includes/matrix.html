@@ -1,6 +1,32 @@
 {% assign symbols = "ç ｸ 日 ﾊ ﾐ ﾋ ｰ ｳ ｼ ﾅ ﾓ ﾆ ｻ ﾜ ﾂ ｵ ﾘ ｱ ﾎ ﾃ ﾏ ｹ ﾒ ｴ ｶ ｷ ﾑ ﾕ ﾗ ｾ ﾈ ｽ ﾀ ﾇ ﾍ ｦ ｲ ｸ ｺ ｿ ﾁ ﾄ ﾉ ﾌ ﾔ ﾖ ﾙ ﾚ ﾛ ﾝ 0 1 2 3 4 5 6 7 8 9 Z : ・ . " = * + - < > ¦ ｜" | split: " " %}
-<div class="matrix">
+<div class="matrix" id="matrix">
     {% for i in (0..125) %}
         <div class="notranslate o{{ i }}">{{ symbols | sample: 20 }}</div>
     {% endfor %}
 </div>
+<script>
+    /*  if JS is available, improve performance by hiding matrix elements we can't see */
+    let clipMatrix = function() {
+        let x = document.getElementById("matrix").getElementsByTagName("div");
+        let width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        let emWidth = width / parseFloat( getComputedStyle( document.getElementById('matrix') )['font-size'] );
+        let visibleColumns = Math.floor(emWidth / 1.38);
+        for(let i = 0; i < visibleColumns && i < x.length; ++i) {
+            document.getElementsByClassName("o" + i)[0].style.display = "block";
+        }
+        for(let i = visibleColumns; i < x.length; ++i) {
+            document.getElementsByClassName("o" + i)[0].style.display = "none";
+        }
+    };
+    window.addEventListener('resize', clipMatrix);
+    clipMatrix();
+    /* if JS is available, generate a random animation timescale on every page load;
+       if JS is not available, we will fall back to a static random timescale determined
+       on site compilation in matrix.scss */
+    let x = document.getElementById("matrix").getElementsByTagName("div");
+    for(let i = 0; i < x.length; ++i) {
+        let rand1 = Math.floor((Math.random() * 16000) + 1) + 2000;
+        let rand2 = Math.floor((Math.random() * 30000) + 1);
+        x[i].style.animation = rand1 + "ms linear " + rand2 + "ms infinite drop";
+    }
+</script>
