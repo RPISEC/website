@@ -4,7 +4,7 @@
 	<span class="blog-categories">
         {% for category in include.post.categories %}
         <span class="blog-filter">
-            <a href="{{ site.baseurl }}/category/{{ category | slugify }}/">{{ category | capitalize }}</a>
+            {{ category | capitalize }}
         </span>
         {% endfor %}
 	</span>
