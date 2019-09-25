@@ -1,6 +1,6 @@
 ---
 title: CSAW CTF Qualification - Pop Goes the Printer
-authors: fzzyhd
+authors: Stefan Blair (fzzyhd)
 date: 2019-09-15
 categories: binary-exploitation
 ---
