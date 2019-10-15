@@ -54,13 +54,14 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-296.73539)">
+     transform="translate(0,-296.73539)"
+     style="display:inline">
     <rect
        id="rect4589"
        width="0.89296871"
        height="0.57877606"
-       x="-0.095084637"
-       y="296.69406"
-       style="stroke-width:0.26458332" />
+       x="-0.26458335"
+       y="296.68994"
+       style="stroke-width:0.26458332;fill:#161616;fill-opacity:1" />
   </g>
 </svg>
