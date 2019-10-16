@@ -59,6 +59,7 @@ defaults:
 
 include:
   - .well-known
+  - .images
 
 plugins:
   - jekyll-archives
