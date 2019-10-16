@@ -136,7 +136,7 @@ The script output `0x4b27ed3604b27fb`, which ended up achieving almost infinite 
 # Leaks
 The program uses `calloc` for the `Buy House` option, which does not pull from [tcache](https://ctf-wiki.github.io/ctf-wiki/pwn/linux/glibc-heap/implementation/tcache/).  TL;DR, tcache is a per-thread structure that maintains a freelist for each chunk size from `0x20` to `0x410` (I am including space for metadata).  When chunks in that size range are freed, they are added to the tcache, unless that particular size has at least `7` tcache entries, in which case it falls back to the fastbin or unsorted bin.  But `calloc` will not pull from chunks in the tcache.
 
-First, I allocated the following chunks, and then used one of the two `Upgrade()`s on `Houses[0].house_desc` to overwrite the size of `Houses[1].house_desc`, such that it absorbs the three chunks below it.  The region shaded with `//////////` is all part of that chunk.
+First, I allocated the following chunks, and then used one of the two `Upgrade`s on `Houses[0].house_desc` to overwrite the size metadata of `Houses[1].house_desc`, such that it absorbs the three chunks below it.  The region shaded with `//////////` is all part of that chunk.
 ```
 +------------+------------+             +------------+------------+
 |            |       0x91 |             |            |       0x91 |   +-----------+------+
@@ -232,7 +232,7 @@ Now, we have a house (`Houses[1]`) which _contains_ these other three chunks.  I
 | aaaaaaaaaa | aaaaaaaaaa |             | aaaaaaaaaa | aaaaaaaaaa |
 +------------+------------+             +------------+------------+
 | aaaaaaaaaa |      0x1d1 |             | aaaaaaaaaa |      0x1d1 |   +-----------+------+
-+------------+------------+             +------------+------------+   | Houses[1] | 0x4a0|
++------------+------------+             +------------+------------+   | Houses[1] | 0x1c0|
 | 0x00000000 | 0x00000000 |             | 0x00000000 | 0x00000000 |   +-----------+------+
 | 0x00000000 | 0x00000000 |             | 0x00000000 | 0x00000000 |
 | 0x00000000 | 0x00000000 |             | 0x00000000 | 0x00000000 |
@@ -316,7 +316,7 @@ Lets take a look at the `tcache_perthread_struct` after we have our leaks:
 +-------------------------------++-------------------------------+ }
 ```
 The `0x4343434343434343` and `0x4444444444444444` are pointers to the `0x20` and `0x30` chunks we just freed.
-By freeing an `0x20` and `0x30` sized chunk earlier, we now have the correct metadata to forge a chunk into the unsorted bin, starting within this `tcache_perthread_struct`.  We needed them to be that size, so that those two pointers would boarder the `char counts[64]` array.  Using this array, we can forge a `size | prev_inuse` for our chunk (more on that later).  If we can allocate this chunk, we can overwrite the entire `tcache_perthread_struct`, including the freelist we need to control.  Lets take another look at the heap.
+By freeing an `0x20` and `0x30` sized chunk earlier, we now have the correct metadata to forge a chunk _within_ this `tcache_perthread_struct` into the unsorted bin.  We needed them to be that size, so that those two pointers would boarder the `char counts[64]` array.  Using this array, we can forge a `size | prev_inuse` for our chunk (more on that later).  If we can allocate this chunk, we can overwrite the entire `tcache_perthread_struct`, including the freelist we need to control.  Lets take another look at the heap.
 ```
                          ...
      +--------------------+--------------------+
@@ -335,7 +335,7 @@ By freeing an `0x20` and `0x30` sized chunk earlier, we now have the correct met
  |   |  aaaaaaaaaaaaaaaa  |  aaaaaaaaaaaaaaaa  |      |
  |   +--------------------+--------------------+      |
  |   |  aaaaaaaaaaaaaaaa  |              0x1d1 |      |                  +-----------+------+
- |   +--------------------+--------------------+      |                  | Houses[1] | 0x4a0|
+ |   +--------------------+--------------------+      |                  | Houses[1] | 0x1c0|
  |   | 0x0000000000000000 | 0x0000000000000000 |      |                  +-----------+------+
  |   | 0x0000000000000000 | 0x0000000000000000 |      |
  |   | 0x0000000000000000 | 0x0000000000000000 |      |
@@ -389,7 +389,7 @@ Additionally, there are some constraints on the chunks due to checks performed:
 2. The next chunk in memory must not have its prev_inuse bit set ([source](https://code.woboq.org/userspace/glibc/malloc/malloc.c.html#3758))
 3. Each chunk must have `chunk->fd->bk == chunk` and `chunk->bk->fd == chunk` ([source](https://code.woboq.org/userspace/glibc/malloc/malloc.c.html#3756))
 
-Now, if we request a chunk of the exact size from the unsorted bin, it will be [returned to use](https://code.woboq.org/userspace/glibc/malloc/malloc.c.html#3804).  However, if that size is a tcache size, the corresponding tache bin must [also be filled](https://code.woboq.org/userspace/glibc/malloc/malloc.c.html#3812).
+Now, if we request a chunk of the exact size from the unsorted bin, it will be [returned to us](https://code.woboq.org/userspace/glibc/malloc/malloc.c.html#3804).  However, if that size is a tcache size, the corresponding tache bin must [also be filled](https://code.woboq.org/userspace/glibc/malloc/malloc.c.html#3812).
 
 Putting these constraints all together, we write the following using the `Upgrade` command:
 ```
@@ -414,7 +414,7 @@ Putting these constraints all together, we write the following using the `Upgrad
 | |  |  aaaaaaaaaaaaaaaa  |  aaaaaaaaaaaaaaaa  |      |       |
 | |  +--------------------+--------------------+      |       |
 | |  |  aaaaaaaaaaaaaaaa  |              0x1d1 |      |       |          +-----------+------+
-| |  +--------------------+--------------------+      |       |          | Houses[1] | 0x80 |
+| |  +--------------------+--------------------+      |       |          | Houses[1] | 0x1c0|
 | |  | 0x0000000000000000 | 0x0000000000000000 |      |       |          +-----------+------+
 | |  | 0x0000000000000000 | 0x0000000000000000 |      |       |
 | |  | 0x0000000000000000 | 0x0000000000000000 |      |       |
