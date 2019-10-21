@@ -9,7 +9,9 @@ This was a CGI binary written in C which used `libmysqlclient` to query results 
 
 The clear first point of attack was to try SQL injection and we found quite quickly that the code
 filtered all characters in the input with `isalpha`. We also noticed that the buffer they were `snprintf`ing
-the query into was of fixed size, 0x3ff. While we could not overflow this, we could truncate the closing quote leading to a MySQL error being printed to the page. The latter of these did not end up being useful in any way, but we spent some time looking into it so it is worth mentioning.
+the query into was of fixed size, 0x3ff.
+
+While we could not overflow this buffer, we could truncate the closing quote leading to a MySQL error being printed to the page. The latter of these did not end up being useful in any way, but we spent some time looking into it so it is worth mentioning.
 
 ![bug](/assets/hc_powersql_bug.png)
 
@@ -21,13 +23,17 @@ RUN sed -i 's/CGI/\x0\x0\x0/g' /usr/local/bin/goahead
 
 We quickly found that, although the challenge re-enabled arbitrary environment variable overwriting, it did not patch out the blacklist filtering which had been added as a hotfix patch. This filtering disallowed us the use of variables such as `PATH`, `IFS`, and anything that started with `LD_`, blocking access to all of the easy paths to RCE.
 
-The first environment variable we attempted to exploit was `LANG`. Seeing how the challenge stripped characters from the input using `isalpha` and knowing that `isalpha` depended on the current locale, we searched for a locale that considered single quotes to be an alpha character. After spending a few hours toying around with the nightmare that is C and locale support, we discovered that, not only did the Dockerfile not install any languages other than POSIX and C, but that no locale we could find considered quotes to be an alpha character. Indeed, none of the locales we found had any different results for `isalpha` within the ASCII range (and there were no locales in the provided Docker container other than the standard `POSIX`, `C`, and `C.utf-8` locales anyway). As it turns out, locale support in C is, in general, extremely messy and configuration-specific.
+The first environment variable we attempted to exploit was `LANG`. Seeing how the challenge stripped characters from the input using `isalpha` and knowing that `isalpha` depended on the current locale, we searched for a locale that considered single quotes to be an alpha character. After spending a few hours toying around with the nightmare that is C and locale support, we discovered that, not only did the Dockerfile not install any languages other than POSIX and C, but that no locale we could find considered quotes to be an alpha character.
+
+Indeed, none of the locales we found had any different results for `isalpha` within the ASCII range (and there were no locales in the provided Docker container other than the standard `POSIX`, `C`, and `C.utf-8` locales anyway). As it turns out, locale support in C is, in general, extremely messy and configuration-specific.
 
 ![cppref1](/assets/hc_powersql_cppref1.jpg)
 
 ![cppref2](/assets/hc_powersql_cppref2.jpg)
 
-After that waste of nearly a day, we started searching for a more exploitable environment variable. After consulting the (very poor) `libmysqlclient` documentation, we found that MySQL server (and client!) both load optional plugins from the a directory specified in the `LIBMYSQL_PLUGIN_DIR` environment variable, using names of plugins specified in the `LIBMYSQL_PLUGINS` environment variable, and these plugins are simply shared object libraries that get passed into `dlopen`. If we were able to load an arbitrary file with this, we could get code execution on the box and win. We had no way to drop files on the box, but we also knew from prior experience that CGI-bin implementations typically pass HTTP request bodies with `stdin`, so we set to crafting a request that would load a shared object that we controlled by loading from the file `/proc/self/fd/0`:
+After that waste of nearly a day, we started searching for a more exploitable environment variable. After consulting the (very poor) `libmysqlclient` documentation, we found that MySQL server (and client!) both load optional plugins from the a directory specified in the `LIBMYSQL_PLUGIN_DIR` environment variable, using names of plugins specified in the `LIBMYSQL_PLUGINS` environment variable, and these plugins are simply shared object libraries that get passed into `dlopen`. If we were able to load an arbitrary file with this, we could get code execution on the box and win.
+
+We had no way to drop files on the box, but we also knew from prior experience that CGI-bin implementations typically pass HTTP request bodies with `stdin`, so we set to crafting a request that would load a shared object that we controlled by loading from the file `/proc/self/fd/0`:
 
 ```python
 import requests
