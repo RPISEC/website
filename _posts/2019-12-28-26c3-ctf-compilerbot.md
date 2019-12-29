@@ -6,15 +6,9 @@ categories: misc
 ---
 
 
-The server for this challenge accepts C source code and compiles it into an executable using Clang. The code is stripped of curly braces and `#` characters and inserted into a simple template:
+The server for this challenge accepts C source code and compiles it into an executable using Clang. Our objective is to recover the contents of the flag file, *but our code is never executed*. The server only tells us whether the compilation was successful and produced no warnings.
 
-```c
-int main(void) {
-    /* code */
-}
-```
-
-The executable is never run, but the server responds with whether the compilation was successful and produced no warnings. This can serve as an oracle: we might be able guess part of the flag, and make the compilation fail or emit a warning if our guess is incorrect.
+The server's response could serve as an oracle if we are able to guess part of the flag and make the compilation fail or emit a warning if our guess is incorrect.
 
 We can throw out any approach that involves `#include "flag"` because the flag is likely not valid C code, and you [cannot abuse the preprocessor to create a string from the contents of a file](https://stackoverflow.com/questions/1246301/c-c-can-you-include-a-file-into-a-string-literal).
 
