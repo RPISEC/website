@@ -10,9 +10,9 @@ The server for this challenge accepts C source code and compiles it into an exec
 
 The server's response could serve as an oracle if we are able to guess part of the flag and make the compilation fail or emit a warning if our guess is incorrect.
 
-We can throw out any approach that involves `#include "flag"` because the flag is likely not valid C code, and you [cannot abuse the preprocessor to create a string from the contents of a file](https://stackoverflow.com/questions/1246301/c-c-can-you-include-a-file-into-a-string-literal).
+We threw out any approach that involves `#include "flag"` because the flag is likely not valid C code, and we didn't think one could [abuse the preprocessor to create a string from the contents of a file](https://stackoverflow.com/questions/1246301/c-c-can-you-include-a-file-into-a-string-literal), but other teams were successful with this.
 
-A better starting point is to use inline assembly and the the [`.incbin`](https://sourceware.org/binutils/docs/as/Incbin.html#Incbin) assembler directive, which includes the given file, or a portion of it, verbatim in the binary. (We first learned about this from write-ups of the [Oneline Calc](https://ctftime.org/task/9149) challenge from TokyoWesterns CTF 2019.)
+Our solution's starting point is to use inline assembly and the [`.incbin`](https://sourceware.org/binutils/docs/as/Incbin.html#Incbin) assembler directive, which includes the given file, or a portion of it, verbatim in the binary. (We first learned about this from write-ups of the [Oneline Calc](https://ctftime.org/task/9149) challenge from TokyoWesterns CTF 2019.)
 
 When we use `.incbin`, the file contents are not embedded until the assembler stage, so we aren't going to be able to trigger an error dependent on the content of the flag before this stage (or during it).
 
