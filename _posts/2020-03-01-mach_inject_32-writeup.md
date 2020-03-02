@@ -6,7 +6,10 @@ categories: misc, mac32
 ---
 
 
-32-bit programs on macOS Mojave are probably the most obscure configuration for Mac software. Due to the various changes in Mojave, [previous resources to inject into 32-bit programs](https://github.com/rentzsch/mach_inject) [are no longer functional](https://github.com/rentzsch/mach_inject/issues/22). There have been [posts on injecting into 64-bit programs](https://knight.sc/malware/2019/03/15/code-injection-on-macos.html), but the 32-bit resources have not been updated. 
+32-bit programs on macOS Mojave are probably the most obscure configuration for Mac software. Due to various changes in Mojave, [previous resources to inject into 32-bit programs](https://github.com/rentzsch/mach_inject) [are no longer functional](https://github.com/rentzsch/mach_inject/issues/22). There have been [posts on injecting into 64-bit programs](https://knight.sc/malware/2019/03/15/code-injection-on-macos.html), but the 32-bit resources have not been updated. This post details our work on writing a library injection tool for 32-bit applications on macOS Mojave.
+
+
+![](/assets/assult_cube_injection.jpg)
 
 
 The hard problems in injecting into a process on macOS are (in order of execution):
