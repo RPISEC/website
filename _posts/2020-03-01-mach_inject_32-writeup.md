@@ -134,6 +134,7 @@ There were a few key tricks in writing this payload:
 - Marking functions as __stdcall, because by default, scc uses a different convention.
 - Assigning external function pointers to placeholder values. In the injector, we will replace these with real pointers.
 - We cannot terminate this thread because it is too broken. So instead we loop indefinitely until another thread can kill it later.
+
 ```c
 // Function types need to be marked with __stdcall or else scc
 // will not use the right calling convention
