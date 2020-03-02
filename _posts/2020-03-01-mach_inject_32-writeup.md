@@ -145,15 +145,15 @@ pthread_create_from_mach_thread_t pthread_create_from_mach_thread = (pthread_cre
 pthread_start_t start_thread = (pthread_start_t)0x42424242;
 
 int main() {
-	pthread_t thread;
-	int ret = pthread_create_from_mach_thread(&thread, NULL, start_thread, NULL);
+    pthread_t thread;
+    int ret = pthread_create_from_mach_thread(&thread, NULL, start_thread, NULL);
 
-	while (ret == 0) {
-		// Wait for death
-	}
+    while (ret == 0) {
+        // Wait for death
+    }
 
-	// If we get here pthread_create failed and the process is going extremely down
-	__breakpoint();
+    // If we get here pthread_create failed and the process is going extremely down
+    __breakpoint();
 }
 ```
 
@@ -172,9 +172,9 @@ dlsym_t dlsym = (dlsym_t)0x44444444;
 const char *path = (const char*)0x30303030;
 int mode = 2;
 void *thread_fn(void *arg) {
-	// If you do anything else, this thread will die in dlopen
-	// (Even if you do it *after* dlopen!)
-	return dlopen(path, mode);
+    // If you do anything else, this thread will die in dlopen
+    // (Even if you do it *after* dlopen!)
+    return dlopen(path, mode);
 }
 
 typedef int (__stdcall *pthread_create_t)(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine)(void *), void *arg);
@@ -183,8 +183,8 @@ typedef int (__stdcall *pthread_detach_t)(pthread_t thread);
 #define RTLD_DEFAULT -2
 
 struct params_t {
-	void *shellcode;
-	void *user_info;
+    void *shellcode;
+    void *user_info;
 };
 
 struct params_t params;
@@ -192,17 +192,17 @@ struct params_t params;
 int main() {
     // Stage 2 main
     pthread_create_t pthread_create = (pthread_create_t)dlsym((void*)RTLD_DEFAULT, "pthread_create");
-	pthread_join_t pthread_join = (pthread_join_t)dlsym((void*)RTLD_DEFAULT, "pthread_join");
+    pthread_join_t pthread_join = (pthread_join_t)dlsym((void*)RTLD_DEFAULT, "pthread_join");
     pthread_detach_t pthread_detach = (pthread_detach_t)dlsym((void*)RTLD_DEFAULT, "pthread_detach");
 
 
-	// We need to open stuff, but calling dlopen is really sketchy. So do it in another thread
-	// whose sole job is to call dlopen and get outta there as fast as possible.
-	// Also it returns the pointer to the module so we can dlsym() the entry point.
-	pthread_t thread;
-	int ret = pthread_create(&thread, NULL, thread_fn, NULL);
-	void *lib;
-	pthread_join(thread, &lib);
+    // We need to open stuff, but calling dlopen is really sketchy. So do it in another thread
+    // whose sole job is to call dlopen and get outta there as fast as possible.
+    // Also it returns the pointer to the module so we can dlsym() the entry point.
+    pthread_t thread;
+    int ret = pthread_create(&thread, NULL, thread_fn, NULL);
+    void *lib;
+    pthread_join(thread, &lib);
 
     // ...
 }
@@ -213,21 +213,21 @@ We can then use the result of `dlopen` with `dlsym` to find our injected library
 ```c
     // ...
 
-	// Find and jump to entry point of inject library
-	void *(*entry)(void *) = (void*(*)(void *))dlsym(lib, "inj_entry");
-	// Pass as argument the code pointer so it can find this thread (and the super janky
-	// first thread) and kill us.
-	params.shellcode = (void *)0x42424242;
-	params.user_info = (void *)0x45454545;
-	ret = pthread_create(&thread, NULL, entry, (void *)&params);
-	pthread_detach(thread);
+    // Find and jump to entry point of inject library
+    void *(*entry)(void *) = (void*(*)(void *))dlsym(lib, "inj_entry");
+    // Pass as argument the code pointer so it can find this thread (and the super janky
+    // first thread) and kill us.
+    params.shellcode = (void *)0x42424242;
+    params.user_info = (void *)0x45454545;
+    ret = pthread_create(&thread, NULL, entry, (void *)&params);
+    pthread_detach(thread);
 
-	while (ret == 0) {
-		// death().await
-	}
+    while (ret == 0) {
+        // death().await
+    }
 
-	// If we get here pthread_create failed and we can't inject
-	__breakpoint();
+    // If we get here pthread_create failed and we can't inject
+    __breakpoint();
 }
 ```
 
@@ -240,68 +240,68 @@ After we have started execution in our library, we are running in the context of
 
 ```c
 struct params_t {
-	void *shellcode;
-	void *user_info;
+    void *shellcode;
+    void *user_info;
 };
 
 void inj_entry(struct params_t *params) {
-	printf("Start! %p %p %p\n", params, params->shellcode, params->user_info);
+    printf("Start! %p %p %p\n", params, params->shellcode, params->user_info);
 
-	// The janky threads are going to be somewhere in this page
-	// thread_start is a pointer to the start address of one of them
-	uint32_t hack_page = (uint32_t)params->shellcode & ~(0xFFF);
+    // The janky threads are going to be somewhere in this page
+    // thread_start is a pointer to the start address of one of them
+    uint32_t hack_page = (uint32_t)params->shellcode & ~(0xFFF);
 
-	// Find all the currently running threads
-	printf("Activate! Thread start at %p\n", params->shellcode);
-	thread_act_array_t thread_list;
-	mach_msg_type_number_t list_count;
-	kern_return_t err = task_threads(mach_task_self_, &thread_list, &list_count);
-	if (err != KERN_SUCCESS) {
-		printf("Could not get threads: %s\n", mach_error_string(err));
-		return;
-	}
+    // Find all the currently running threads
+    printf("Activate! Thread start at %p\n", params->shellcode);
+    thread_act_array_t thread_list;
+    mach_msg_type_number_t list_count;
+    kern_return_t err = task_threads(mach_task_self_, &thread_list, &list_count);
+    if (err != KERN_SUCCESS) {
+        printf("Could not get threads: %s\n", mach_error_string(err));
+        return;
+    }
 
-	for (int i = 0; i < list_count; i ++) {
-		thread_act_t thread = thread_list[i];
-		if (thread == mach_thread_self()) {
-			printf("We are thread %d\n", i);
-			continue;
-		}
+    for (int i = 0; i < list_count; i ++) {
+        thread_act_t thread = thread_list[i];
+        if (thread == mach_thread_self()) {
+            printf("We are thread %d\n", i);
+            continue;
+        }
 
-		// Find where this thread is at
-		x86_thread_state32_t old_state;
-		mach_msg_type_number_t state_count = x86_THREAD_STATE32_COUNT;
-		err = thread_get_state(thread, x86_THREAD_STATE32, (thread_state_t)&old_state, &state_count);
+        // Find where this thread is at
+        x86_thread_state32_t old_state;
+        mach_msg_type_number_t state_count = x86_THREAD_STATE32_COUNT;
+        err = thread_get_state(thread, x86_THREAD_STATE32, (thread_state_t)&old_state, &state_count);
 
-		if (err != KERN_SUCCESS) {
-			printf("Could not get thread info for thread %d: %s\n", i, mach_error_string(err));
-			return;
-		}
+        if (err != KERN_SUCCESS) {
+            printf("Could not get thread info for thread %d: %s\n", i, mach_error_string(err));
+            return;
+        }
 
-		// If this is one of the janky threads, kill it (gently)
-		if ((old_state.__eip & ~(0xFFF)) == hack_page) {
-			printf("Janky thread %d eip 0x%08u (start is 0x%08u)\n", i, old_state.__eip, hack_page);
-			// If you don't suspend the thread before terminating it, the Finder will Find you in your sleep
-			thread_suspend(thread);
-			thread_terminate(thread);
-		}
-	}
+        // If this is one of the janky threads, kill it (gently)
+        if ((old_state.__eip & ~(0xFFF)) == hack_page) {
+            printf("Janky thread %d eip 0x%08u (start is 0x%08u)\n", i, old_state.__eip, hack_page);
+            // If you don't suspend the thread before terminating it, the Finder will Find you in your sleep
+            thread_suspend(thread);
+            thread_terminate(thread);
+        }
+    }
 
     // Call user code
 
-	const char *lib_path = (const char *)params->user_info;
-	const char *lib_fn = lib_path + strlen(lib_path) + 1;
+    const char *lib_path = (const char *)params->user_info;
+    const char *lib_fn = lib_path + strlen(lib_path) + 1;
 
-	printf("Loading %s\n", lib_path);
-	void *lib = dlopen(lib_path, RTLD_NOW);
+    printf("Loading %s\n", lib_path);
+    void *lib = dlopen(lib_path, RTLD_NOW);
 
-	printf("Loaded at %p\n", lib);
-	void (*fn)(void) = (void(*)(void))dlsym(lib, lib_fn);
+    printf("Loaded at %p\n", lib);
+    void (*fn)(void) = (void(*)(void))dlsym(lib, lib_fn);
 
-	printf("Running %s::%s() at %p\n", lib_path, lib_fn, fn);
-	if (fn != NULL) {
-		fn();
-	}
+    printf("Running %s::%s() at %p\n", lib_path, lib_fn, fn);
+    if (fn != NULL) {
+        fn();
+    }
 }
 ```
 
@@ -315,16 +315,16 @@ First, a convenience helper for reading virtual memory from the target process:
 // Read memory from vmaddr in task of length bytes
 // Returns a malloc'd buffer 
 char *virtual_read(task_t task, mach_vm_address_t vmaddr, mach_vm_size_t length) {
-	char *memory = (char *)malloc((size_t) length);
-	mach_vm_offset_t output = (mach_vm_offset_t)memory;
-	mach_vm_size_t outsize;
-	kern_return_t ret;
+    char *memory = (char *)malloc((size_t) length);
+    mach_vm_offset_t output = (mach_vm_offset_t)memory;
+    mach_vm_size_t outsize;
+    kern_return_t ret;
 
-	ret = mach_vm_read_overwrite(task, vmaddr, length, output, &outsize);
+    ret = mach_vm_read_overwrite(task, vmaddr, length, output, &outsize);
 
-	if (ret != KERN_SUCCESS) return NULL;
+    if (ret != KERN_SUCCESS) return NULL;
 
-	return (char *)output;
+    return (char *)output;
 }
 ```
 
@@ -333,94 +333,94 @@ Then to start resolving functions, we need to find the base address of a library
 ```c
 static uint32_t find_function32(task_t task, char *base, char *shared_cache_rx_base, const char *fnname)
 {
-	struct mach_header *base_header = (struct mach_header *)virtual_read(task, (mach_vm_address_t)base, sizeof(struct mach_header));
-	uint32_t ncmds = base_header->ncmds;
-	free(base_header);
-	struct symtab_command *symcmd = NULL;
+    struct mach_header *base_header = (struct mach_header *)virtual_read(task, (mach_vm_address_t)base, sizeof(struct mach_header));
+    uint32_t ncmds = base_header->ncmds;
+    free(base_header);
+    struct symtab_command *symcmd = NULL;
 
-	mach_vm_address_t start = (mach_vm_address_t)(base + sizeof(struct mach_header));
+    mach_vm_address_t start = (mach_vm_address_t)(base + sizeof(struct mach_header));
 
-	// Get symtab and dysymtab
-	for (uint32_t i = 0; i < ncmds; ++i) {
-		struct segment_command *cmd = (struct segment_command *)virtual_read(task, start, 0x100);
+    // Get symtab and dysymtab
+    for (uint32_t i = 0; i < ncmds; ++i) {
+        struct segment_command *cmd = (struct segment_command *)virtual_read(task, start, 0x100);
 
-		if (cmd->cmd == LC_SYMTAB) {
-			symcmd = (struct symtab_command*)cmd;
-			break;
-		}
-		start += cmd->cmdsize;
-		free(cmd);
-	}
+        if (cmd->cmd == LC_SYMTAB) {
+            symcmd = (struct symtab_command*)cmd;
+            break;
+        }
+        start += cmd->cmdsize;
+        free(cmd);
+    }
 
-	// We need to resolve where the symbol/string tables are in the target memory
-	mach_vm_address_t strtab_start = 0;
-	mach_vm_address_t symtab_start = 0;
-	// Also need the base address of the binary (different with cache)
-	uint64_t aslr_slide = 0;
+    // We need to resolve where the symbol/string tables are in the target memory
+    mach_vm_address_t strtab_start = 0;
+    mach_vm_address_t symtab_start = 0;
+    // Also need the base address of the binary (different with cache)
+    uint64_t aslr_slide = 0;
 
-	// If this library is in the shared cache then use that instead
-	if (base >= shared_cache_rx_base) {
-		// "Playing with Mach-O binaries and dyld", but virtual_read
-		dyld_cache_header *cache_header = (dyld_cache_header *)virtual_read(task, (mach_vm_address_t)shared_cache_rx_base, sizeof(dyld_cache_header));
+    // If this library is in the shared cache then use that instead
+    if (base >= shared_cache_rx_base) {
+        // "Playing with Mach-O binaries and dyld", but virtual_read
+        dyld_cache_header *cache_header = (dyld_cache_header *)virtual_read(task, (mach_vm_address_t)shared_cache_rx_base, sizeof(dyld_cache_header));
 
-		size_t rx_size = 0;
-		size_t rw_size = 0;
-		size_t rx_addr = 0;
-		size_t ro_addr = 0;
-		off_t ro_off = 0;
+        size_t rx_size = 0;
+        size_t rw_size = 0;
+        size_t rx_addr = 0;
+        size_t ro_addr = 0;
+        off_t ro_off = 0;
 
-		for (int i = 0; i < cache_header->mappingCount; ++i) {
-			shared_file_mapping_np *mapping = (shared_file_mapping_np *)virtual_read(task, (mach_vm_address_t)shared_cache_rx_base + cache_header->mappingOffset + sizeof(shared_file_mapping_np) * i, sizeof(shared_file_mapping_np));
+        for (int i = 0; i < cache_header->mappingCount; ++i) {
+            shared_file_mapping_np *mapping = (shared_file_mapping_np *)virtual_read(task, (mach_vm_address_t)shared_cache_rx_base + cache_header->mappingOffset + sizeof(shared_file_mapping_np) * i, sizeof(shared_file_mapping_np));
 
-			if (mapping->init_prot & VM_PROT_EXECUTE) {
-				// Get size and address of [R-X] mapping
-				rx_size = (size_t)mapping->size;
-				rx_addr = (size_t)mapping->address;
-			} else if (mapping->init_prot & VM_PROT_WRITE) {
-				// Get size of [RW-] mapping
-				rw_size = (size_t)mapping->size;
-			} else if (mapping->init_prot == VM_PROT_READ) {
-				// Get file offset of [R--] mapping
-				ro_off = (size_t)mapping->file_offset;
-				ro_addr = (size_t)mapping->address;
-			}
+            if (mapping->init_prot & VM_PROT_EXECUTE) {
+                // Get size and address of [R-X] mapping
+                rx_size = (size_t)mapping->size;
+                rx_addr = (size_t)mapping->address;
+            } else if (mapping->init_prot & VM_PROT_WRITE) {
+                // Get size of [RW-] mapping
+                rw_size = (size_t)mapping->size;
+            } else if (mapping->init_prot == VM_PROT_READ) {
+                // Get file offset of [R--] mapping
+                ro_off = (size_t)mapping->file_offset;
+                ro_addr = (size_t)mapping->address;
+            }
 
-			free(mapping);
-		}
-		free(cache_header);
+            free(mapping);
+        }
+        free(cache_header);
 
-		aslr_slide = (uint64_t)shared_cache_rx_base - rx_addr;
+        aslr_slide = (uint64_t)shared_cache_rx_base - rx_addr;
 
-		char *shared_cache_ro = (char*)(ro_addr + aslr_slide);
-		uint64_t stroff_from_ro = symcmd->stroff - rx_size - rw_size;
-		uint64_t symoff_from_ro = symcmd->symoff - rx_size - rw_size;
+        char *shared_cache_ro = (char*)(ro_addr + aslr_slide);
+        uint64_t stroff_from_ro = symcmd->stroff - rx_size - rw_size;
+        uint64_t symoff_from_ro = symcmd->symoff - rx_size - rw_size;
 
-		strtab_start = (mach_vm_address_t)(shared_cache_ro + stroff_from_ro);
-		symtab_start = (mach_vm_address_t)(shared_cache_ro + symoff_from_ro);
-	} else {
-		// Otherwise just use the base address of the library
-		aslr_slide = (uint64_t)base;
-		strtab_start = (mach_vm_address_t)base + symcmd->stroff;
-		symtab_start = (mach_vm_address_t)base + symcmd->symoff;
-	}
+        strtab_start = (mach_vm_address_t)(shared_cache_ro + stroff_from_ro);
+        symtab_start = (mach_vm_address_t)(shared_cache_ro + symoff_from_ro);
+    } else {
+        // Otherwise just use the base address of the library
+        aslr_slide = (uint64_t)base;
+        strtab_start = (mach_vm_address_t)base + symcmd->stroff;
+        symtab_start = (mach_vm_address_t)base + symcmd->symoff;
+    }
 
-	char *strtab = (char *)virtual_read(task, strtab_start, symcmd->strsize);
-	struct nlist *symtab = (struct nlist *)virtual_read(task, symtab_start, symcmd->nsyms * sizeof(struct nlist));
+    char *strtab = (char *)virtual_read(task, strtab_start, symcmd->strsize);
+    struct nlist *symtab = (struct nlist *)virtual_read(task, symtab_start, symcmd->nsyms * sizeof(struct nlist));
 
-	for (uint32_t i = 0; i < symcmd->nsyms; ++i){
-		uint32_t strtab_off = symtab[i].n_un.n_strx;
-		uint32_t func       = symtab[i].n_value;
+    for (uint32_t i = 0; i < symcmd->nsyms; ++i){
+        uint32_t strtab_off = symtab[i].n_un.n_strx;
+        uint32_t func       = symtab[i].n_value;
 
-		if(strcmp(&strtab[strtab_off], fnname) == 0) {
-			free(strtab);
-			free(symtab);
-			return (uint32_t)func + aslr_slide;
-		}
-	}
+        if(strcmp(&strtab[strtab_off], fnname) == 0) {
+            free(strtab);
+            free(symtab);
+            return (uint32_t)func + aslr_slide;
+        }
+    }
 
-	free(strtab);
-	free(symtab);
-	return 0;
+    free(strtab);
+    free(symtab);
+    return 0;
 }
 ```
 
@@ -428,11 +428,11 @@ Then we can put these parts together and find the address of any function in the
 
 ```c
 uint32_t task_dlsym32(task_t task, pid_t pid, const char *libName, const char *fnName) {
-	char *shared_cache_base;
-	char *lib_base = find_lib32(task, libName, &shared_cache_base);
-	uint32_t fn_guest = find_function32(task, lib_base, shared_cache_base, fnName);
+    char *shared_cache_base;
+    char *lib_base = find_lib32(task, libName, &shared_cache_base);
+    uint32_t fn_guest = find_function32(task, lib_base, shared_cache_base, fnName);
 
-	return (uint32_t)fn_guest;
+    return (uint32_t)fn_guest;
 }
 ```
 
@@ -463,18 +463,18 @@ Then, a list of remappings that match strings in the shellcode to be replaced wi
 
 ```c
 struct remap {
-	const char *search;
-	uint32_t replace;
-	int replace_count;
+    const char *search;
+    uint32_t replace;
+    int replace_count;
 };
 
 struct remap remaps[] = {
-	{"0000", (uint32_t)injLibAddr, 0},
-	{"AAAA", (uint32_t)task_dlsym32(remoteTask, pid, "libsystem_pthread.dylib", "_pthread_create_from_mach_thread"), 0},
-	{"BBBB", (uint32_t)remoteCode + sc1_length, 0},
-	{"CCCC", (uint32_t)task_dlsym32(remoteTask, pid, "libdyld.dylib", "_dlopen"), 0},
-	{"DDDD", (uint32_t)task_dlsym32(remoteTask, pid, "libdyld.dylib", "_dlsym"), 0},
-	{"EEEE", (uint32_t)injLibParamsAddr, 0},
+    {"0000", (uint32_t)injLibAddr, 0},
+    {"AAAA", (uint32_t)task_dlsym32(remoteTask, pid, "libsystem_pthread.dylib", "_pthread_create_from_mach_thread"), 0},
+    {"BBBB", (uint32_t)remoteCode + sc1_length, 0},
+    {"CCCC", (uint32_t)task_dlsym32(remoteTask, pid, "libdyld.dylib", "_dlopen"), 0},
+    {"DDDD", (uint32_t)task_dlsym32(remoteTask, pid, "libdyld.dylib", "_dlsym"), 0},
+    {"EEEE", (uint32_t)injLibParamsAddr, 0},
 };
 ```
 
@@ -489,13 +489,13 @@ Then, we just iterate through the shellcode and check each offset against each r
 ```c
 char *possiblePatchLocation = (char*)(shellcode);
 for (int i = 0 ; i < sizeof(shellcode); i++) {
-	possiblePatchLocation++;
-	for (int j = 0; j < sizeof(remaps) / sizeof(*remaps); j ++) {
-		if (memcmp(possiblePatchLocation, remaps[j].search, 4) == 0) {
-			memcpy(possiblePatchLocation, &remaps[j].replace, 4);
-			remaps[j].replace_count ++;
-		}
-	}
+    possiblePatchLocation++;
+    for (int j = 0; j < sizeof(remaps) / sizeof(*remaps); j ++) {
+        if (memcmp(possiblePatchLocation, remaps[j].search, 4) == 0) {
+            memcpy(possiblePatchLocation, &remaps[j].replace, 4);
+            remaps[j].replace_count ++;
+        }
+    }
 }
 ```
 
@@ -533,9 +533,9 @@ code_size = (code_size + 0xfff) & ~0xfff
 
 # Write to a C header file for main.m to include
 with open(project_dir + "/testinj/shellcode.h", "w") as f:
-	f.write(formatted)
-	f.write("uint32_t sc1_length = 0x{:x};\n".format(len(proc1_output)))
-	f.write("#define CODE_SIZE 0x{:x}\n".format(code_size))
+    f.write(formatted)
+    f.write("uint32_t sc1_length = 0x{:x};\n".format(len(proc1_output)))
+    f.write("#define CODE_SIZE 0x{:x}\n".format(code_size))
 ```
 
 Conclusion
