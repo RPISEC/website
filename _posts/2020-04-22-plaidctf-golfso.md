@@ -592,4 +592,4 @@ $ xxd ./libgolf2.so
 `You made it to level 4: flag-worthy! You have 1 byte left to be record-breaking. This effort is worthy of 2/2 flags. PCTF{th0ugh_wE_have_cl1mBed_far_we_MusT_St1ll_c0ntinue_oNward} PCTF{t0_get_a_t1ny_elf_we_5tick_1ts_hand5_in_its_ears_rtmlpntyea}`
 
 # The full scripts
-Some of the diffs in this post have been truncated for clarity. The full scripts are (in a separate repository)[https://github.com/aweinstock314/aweinstock-ctf-writeups/tree/3aa1274c98b49ffe26365365aa1a4d58fc1064e3/plaidctf_2020/golf_so].
+Some of the diffs in this post have been truncated for clarity. The full scripts are [in a separate repository](https://github.com/aweinstock314/aweinstock-ctf-writeups/tree/3aa1274c98b49ffe26365365aa1a4d58fc1064e3/plaidctf_2020/golf_so).
