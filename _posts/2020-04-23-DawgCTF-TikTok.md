@@ -300,17 +300,20 @@ Below is a diagram of an allocated chunk on the heap. The first 16 bytes of a ch
                 | Size of previous chunk, if unallocated (P = 0)                |
                 +---------------------------------------------------------------+
                 | Size of chunk B, in bytes                               |A|M|P|
-address of B -> +---------------------------------------------------------------+   --+
-                | Chunk B data                                                  |     |   
-                .                                                               .     |
-                .                                                               .     |___ chunk B's usable data  
-                .                                                               .     |    space when in use
-     chunk C    +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -+     |    (malloc_usable_size() bytes)
-                | Size of chunk B if B is freed, otherwise used for chunk B data|     |
-                +---------------------------------------------------------------+   --+
-                | Size of chunk C, in bytes                               |A|M|1|
-address of C -> +---------------------------------------------------------------+
-
+address of B -> +---------------------------------------------------------------+  -+
+                | Chunk B data                                                  |   |   
+                .                                                               .   |
+                .                                                               .   |-+
+                .                                                               .   | |    
+     chunk C    +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -+   | |   
+                | Size of chunk B if B is freed, otherwise used for chunk B data|   | |
+                +---------------------------------------------------------------+  -+ | 
+                | Size of chunk C, in bytes                               |A|M|1|     |
+address of C -> +---------------------------------------------------------------+     | 
+                                                                                      |
+                                                    chunk B's usable data      <------+
+                                                    space when in use
+                                                    (malloc_usable_size() bytes)
 ```
 
 AMP are bits with information on the heap; P is the only one we care about: it will get set if the previous chunk is in use (i.e. not freed). However when a freed chunk gets put in a tcache bin, the `P` bit of the next element _still_ remains set. This is so the heap manager will ignore this chunk when it sweeps for adjacent free chunks to combine together (tcache chunks don't get included in this coalescing).
