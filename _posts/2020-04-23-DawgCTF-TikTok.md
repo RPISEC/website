@@ -261,7 +261,7 @@ __gef__: On top of `gdb` I'm using [gef](https://github.com/hugsy/gef) which add
 __rr:__ I'm also running the binary with [rr](https://rr-project.org/) which is great, and I highly recommend it. It deterministically records the execution and allows you to step through it as you would in gdb normally (with gef/[PEDA](https://github.com/longld/peda)/etc.) but you can also reverse-continue, reverse-step, reverse-next, etc. I also use [gef](https://gef.readthedocs.io/en/master/) on top of gdb. 
 __Pwngdb__: I also have [Pwngdb](https://github.com/scwuaptx/Pwngdb) for heap stuff.
 
-I imported 43 songs normally and for the 44th one, I gave it the file path `Cannibal////////////////` since the name must be 24 bytes without any `"."` for this to work. This works because Linux allows you to open file descriptors for directories just like normal files. Then I play that song, giving it -1 as a file size and a bunch of 'A's. Let's see what happens when we look at it in a debugger. Because I'm running it with rr, it will  record the execution which we can replay by calling `rr replay`.  
+I imported 43 songs normally and for the 44th one, I gave it the file path `Cannibal////////////////` since the name must be 24 bytes without any `"."` for this to work. This works because Linux allows you to open file descriptors for directories just like normal files. Then I play that song, giving it -1 as a file size and a bunch of 'A's. Let's see what happens when we look at it in a debugger. Because I'm running it with `rr`, it will  record the execution which we can replay by calling `rr replay`.  
 
 At the end of execution, here is what the song struct array looks like. For the 43 normal song structs, they look like this:
 
