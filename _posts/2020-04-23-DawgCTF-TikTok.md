@@ -123,7 +123,7 @@ This functionality becomes very interesting when you realize a few things:
 
 2) **If `songs[i].file_name` is not null terminated, `strtok()` will treat the file descriptor as part of the string:** In each song struct, `songs[i].file_name`resides directly above `songs[i].fd`. `strtok()` will scan until it reaches a null character, and if none is found, it will continue searching into the next field of the struct, `songs[i].fd`.
 
-3) **If the file descriptor is a `.` then `strtok()` will replace it with a null byte:**  The first three file descriptors for a Linux process, 0, 1, and 2 will (unless otherwise specified) be assigned to STDIN, STDOUT and STDERR respectively. So when `open` is called on a file, it will assign a new fd beginning with 3. Every time a song is imported a new file descriptor is opened for it, and won't get closed until the user chooses to remove the song. Were the user to import 44 songs, then `songs[43].fd = 46`,  which is the the ASCII code for `.`.
+3) **If the file descriptor is a `.` then `strtok()` will replace it with a null byte:**  The first three file descriptors for a Linux process, 0, 1, and 2 will (unless otherwise specified) be assigned to STDIN, STDOUT and STDERR respectively. So when `open` is called on a file, it will assign a new fd beginning with 3. Every time a song is imported a new file descriptor is opened for it, and won't get closed until the user chooses to remove the song. Were the user to import 44 songs, then `songs[43].fd = 46`,  which is the the ASCII code for `"."`.
 ```python
 ➜  python3
 >>> chr(46)
