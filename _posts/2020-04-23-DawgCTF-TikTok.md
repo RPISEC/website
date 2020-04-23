@@ -191,10 +191,7 @@ We can get both our leak and function pointer overwrite using an arbitrary write
 4.  __Call free() on a chunk that begins with `"/bin/sh\0"`__
 5. __Profit__
 
-We start with step __1__.
-
- ### Writing Arbitrarily 
-
+### Writing Arbitrarily 
 Here, an arbitrary write can be broken into two parts:
 * __Writing anywhere (in writeable address space)__
 * __Writing anything__
