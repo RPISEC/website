@@ -84,7 +84,7 @@ Next we decompile the binary. Option 2 and 5 are rather straightforward (2 outpu
 
 Below is the edited decompilation of `import_song()`, the function that gets called when selecting Option 1. 
 
-![import_song](https://github.com/perribus/ctf_writeups/blob/master/images/import_song.png?raw=true)
+![import_song](https://raw.githubusercontent.com/perribus/ctf_writeups/master/images/import_song.png)
 
 When `listoptions()` gets called it will `ls -R` the directory it's in. If we netcat into the server running this challenge we can select `1. Import a Song to the Playlist` and the contents of the challenge's directory will get listed. Doing this shows it contains a `flag.txt` and the same song folders and files that we have. 
 
@@ -152,7 +152,7 @@ As you can see in the example song file shown above `Animal/tiktok.txt`is 2117 b
 
 ### Remove Song
 
-![remove_song](https://github.com/perribus/ctf_writeups/blob/master/images/remove_song.png?raw=tru)
+![remove_song](https://raw.githubusercontent.com/perribus/ctf_writeups/master/images/remove_song.png)
 
 Option 4 allows a user to remove a song, which calls `free` on its lyrics pointer, closes its file descriptor and sets its pointers to null, . It doesn't decrement song count however (although this never matters). 
 
