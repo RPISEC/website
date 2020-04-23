@@ -400,18 +400,21 @@ writing here -> +-----------------------------------------------------+
 (free) chunk B  +- - - - - - - - - - - - - - - - - - - - - - - - - - -+           
                 | <0x0000000000000000>                                |           
                 +-----------------------------------------------------+         
-                | <0x0000000000000021> Size of B (0x20) + AMP (0|0|1) |         addr = 0x404078
-                +-----------------------------------------------------+         +---------------+      
-      tc bin -> | <0x0000000000404078>                                | ----->  |songs[0].fd = 3|
-                + -    -    -    -    -    -    -    -    -    -    - +         +---------------+     
-                |                                                     |                    
-      chunk C   +- - - - - - - - - - - - - - - - - - - - - - - - - - -+            
-                | Unused space (chunk B in tcache so still "in use"   |           
-                +-----------------------------------------------------+            
-                | Size of chunk C                               |0|0|1|            
-                +-----------------------------------------------------+
-
-                        
+                | <0x0000000000000021> Size of B (0x20) + AMP (0|0|1) |         
+                +-----------------------------------------------------+               
+      tc bin -> | <0x0000000000404078>                                | --> 
+                + -    -    -    -    -    -    -    -    -    -    - +   |        
+                |                                                     |   |                 
+      chunk C   +- - - - - - - - - - - - - - - - - - - - - - - - - - -+   |         
+                | Unused space (chunk B in tcache so still "in use"   |   |        
+                +-----------------------------------------------------+   |         
+                | Size of chunk C                               |0|0|1|   |         
+                +-----------------------------------------------------+   |
+                                                                          |
+                                 addr = 0x404078                          |
+                                +---------------+                         |
+                                |songs[0].fd = 3| <---------------------- V  
+                                +---------------+                          
 ```
 When we next play a song of size 0 the program will call `malloc(0)` again, and the heap manager will give us the next chunk in its tcache bin for 0x20, `chunk B`. When it removes `chunk B` from the tcache, it will take the pointer we overwrote in B, and make that the new head element:
 ```
