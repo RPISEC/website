@@ -1016,6 +1016,8 @@ As mentioned above, [this](https://syedfarazabrar.com/2019-10-12-picoctf-2019-he
 
 [Good explainer](https://systemoverlord.com/2017/03/19/got-and-plt-for-pwning.html) of the GOT and PLT
 
+I think LiveOverflow has some good videos on heap exploitation: https://www.youtube.com/channel/UClcE-kVhqyiHCcjYwcpfj9w/playlists
+
 ### Tools
 gef: https://github.com/hugsy/gef
 
