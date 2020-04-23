@@ -78,7 +78,9 @@ So what would you like to do today?
 Choice:
 ```
 
-Next we decompile the binary. Option 2 and 5 are rather straightforward (2 outputs the playlist and 5 exits the program), but Options 1, 3, and 4 look interesting, so we'll look at the functions that get called for those options. 
+Next we decompile the binary. I used [Ghidra](https://ghidra-sre.org/) to do this. 
+
+Option 2 and 5 are rather straightforward (2 outputs the playlist and 5 exits the program), but Options 1, 3, and 4 look interesting, so we'll look at the functions that get called for those options. 
 
 ### Import Song
 
