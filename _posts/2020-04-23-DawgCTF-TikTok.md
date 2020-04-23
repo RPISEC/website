@@ -1,4 +1,9 @@
-
+---
+title: TikTok - A tcache tutorial with our dear friend Ke$ha
+authors: Perri Adams (perribus)
+date: 2020-04-23
+categories: pwn, tcache, Ke$ha
+---
 # TikTok - A tcache tutorial with our dear friend Ke$ha
 
 **If you've ever wondered 'Which Ke$ha songs are short enough to fit into a Tcache bin?' this is the challenge for you.**
