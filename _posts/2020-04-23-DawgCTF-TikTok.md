@@ -4,8 +4,6 @@ authors: Perri Adams (perribus)
 date: 2020-04-23
 categories: pwn, tcache, Ke$ha
 ---
-# TikTok - A tcache tutorial with our dear friend Ke$ha
-
 **If you've ever wondered 'Which Ke$ha songs are short enough to fit into a Tcache bin?' this is the challenge for you.**
 
 This was a 500 pt pwning challenge for UMBC's DawgCTF 2020, written by the always amazing [Anna](https://twitter.com/annatea16). How can you not love a challenge called TikTok that uses `strtok` (haha) to create a cool vuln and then makes CTF players wrestle Ke$ha lyrics into an exploitable heap layout. Sadly I didn't see this challenge until a few hours before the CTF ended so I couldn't finish it in time, but I got the flag after the fact. Anna also has a great [writeup](https://github.com/toomanybananas/dawgctf-2020-writeups/blob/master/pwn/tiktok/WRITEUP.md) of how she solved her own challenge which you should read as well, especially since her exploit differs a bit from mine.
