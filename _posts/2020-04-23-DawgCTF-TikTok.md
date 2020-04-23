@@ -97,7 +97,7 @@ Given the contents of the challenge directory, the only available option is to s
 
 The file path gets read into a global array of structs called `songs`: this is our "playlist" of songs that we have imported. This is stored in the `.bss` section, which is readable and writeable (but not executable). Each struct is 56 bytes long, with 7 fields. Below is what the song struct looks like. 
 
-![song_struct](https://github.com/perribus/ctf_writeups/blob/master/images/song_struct.png?raw=tru)
+![song_struct](https://raw.githubusercontent.com/perribus/ctf_writeups/master/images/song_struct.png)
 
 The first 24 bytes of the struct is a 24 bytes array of the song file path, `file_name`. Directly below it is a 4 byte file descripter (fd) that gets assigned when the file path is opened. Below that is 4 bytes of padding, and then 3 pointers. The first pointer will point at the album name (the directory part of the `file_name`) , the second will point at the song name and the third will point into the heap (given intended program behavior). 
 
@@ -142,7 +142,7 @@ What can we do with this behavior? We need to look at where the program reads fr
 
 ### Play Song
 
-![play_song](https://github.com/perribus/ctf_writeups/blob/master/images/play_song.png?raw=tru)
+![play_song](https://raw.githubusercontent.com/perribus/ctf_writeups/master/images/play_song.png)
 
 If a song has not yet been played the program will read the lyrics in from its file descriptor. `play_song()` first checks if the `lyrics` field has been set (line 30). If not,`play_song()` will read the first line of the file, which contains the file size. This goes in (`song_len`). 
 
