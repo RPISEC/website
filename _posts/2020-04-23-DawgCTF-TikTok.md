@@ -469,7 +469,7 @@ p.send(chunkA + chunkB) # Overwrites chunks A and B
 ```
 This is what the heap looks like after we've free'd our chunks but before we play song #44.
 
-![before_overwrite](../../images/before_overwrite.png)
+![before_overwrite](https://github.com/perribus/ctf_writeups/blob/master/images/before_overwrite.png)
 
 These addresses will change on future runs, because the address of the heap is subject to ASLR, but for now:
 
