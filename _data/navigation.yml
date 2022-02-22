@@ -10,3 +10,7 @@
   link: /contact/
   new_window: false
   highlight: false
+- name: Tools
+  link: https://tools.rpis.ec/
+  new_window: true
+  highlight: false
