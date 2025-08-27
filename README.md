@@ -4,6 +4,30 @@ I'll use Ruby and you can't stop me.
 
 ## Howto
 
+### Install Ruby
+```
+sudo apt-get update
+sudo apt-get install ruby-full ruby-bundle
+```
+
+This project does not yet support Ruby >= 3.0.0. Use the following steps to install a usable version.
+
+```
+git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+
+source ~/.bashrc
+
+rbenv install 2.7.8
+
+# run while in the website/ directory
+rbenv local 2.7.8
+```
+
+
 ### Install dependencies
 
 ```
