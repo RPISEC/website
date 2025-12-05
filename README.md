@@ -44,7 +44,19 @@ bundle exec jekyll serve
 
 ### Add new blog post
 
-Add new a new markdown file to `_posts/`
+Add new a new markdown file to `_posts/` with jekyll configuration at the top of the file.
+
+jekyll automatically will include the new blog item. If the default excerpt that appears in the blog list is not correct, customize it by adding `excerpt_separator` to the configuration at the top of the file.
+```md
+---
+title:
+authors:
+date:
+categories:
+excerpt_separator: "<!-- more -->"
+---
+```
+and include the sequence `<!-- more -->` where you want the excerpt to end.
 
 ### Publish changes
 
