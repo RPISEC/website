@@ -10,3 +10,7 @@
   link: /contact/
   new_window: false
   highlight: false
+- name: Donate
+  link: /donate/
+  new_window: false
+  highlight: false
